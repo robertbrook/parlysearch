@@ -1,0 +1,40 @@
+one:
+  id: 1
+  title: MyString
+  description: MyText
+  body: MyText
+  accept_ranges: MyString
+  cache_control: MyString
+  connection: MyString
+  content_length: MyString
+  content_type: MyString
+  date: 2009-06-04 11:30:33
+  etag: MyString
+  expires: MyString
+  last_modified: 2009-06-04 11:30:33
+  pragma: MyString
+  server: MyString
+  set_cookie: MyString
+  transfer_encoding: MyString
+  url: MyString
+  x_powered_by: MyString
+two:
+  id: 2
+  title: MyString
+  description: MyText
+  body: MyText
+  accept_ranges: MyString
+  cache_control: MyString
+  connection: MyString
+  content_length: MyString
+  content_type: MyString
+  date: 2009-06-04 11:30:33
+  etag: MyString
+  expires: MyString
+  last_modified: 2009-06-04 11:30:33
+  pragma: MyString
+  server: MyString
+  set_cookie: MyString
+  transfer_encoding: MyString
+  url: MyString
+  x_powered_by: MyString
