@@ -1,7 +1,8 @@
 require 'lib/parlyspider.rb'
 
 namespace :parlysearch do
-  desc "Make slugs for a model."
+
+  desc "Spider and index - in beta!"
   task :spider => :environment do
     begin
       system 'rake solr:start' # ensure solr is running
