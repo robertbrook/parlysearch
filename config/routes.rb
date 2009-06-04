@@ -1,4 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
+
+  map.resources :parly_resources
+
+  map.search '/search', :controller => "parly_resources", :action => 'search'
+
   # The priority is based upon order of creation: first created -> highest priority.
 
   # Sample of regular route:
@@ -17,7 +22,7 @@ ActionController::Routing::Routes.draw do |map|
 
   # Sample resource route with sub-resources:
   #   map.resources :products, :has_many => [ :comments, :sales ], :has_one => :seller
-  
+
   # Sample resource route with more complex sub-resources
   #   map.resources :products do |products|
   #     products.resources :comments
