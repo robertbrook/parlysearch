@@ -39,7 +39,7 @@ class ParlySpider
         end
 
         s.on :success do |a_url, response, prior_url|
-          if count > 20
+          if count > 200
             raise 'end'
           elsif !ParlyResource.exists?(:url => a_url)
             puts "#{response.code}: #{a_url}"
@@ -60,7 +60,10 @@ class ParlySpider
               data.date = Time.parse(data.date) if data.date
               data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
               attributes = data.morph_attributes
-              attributes.delete('connection')
+              attributes.delete(:connection)
+              attributes.delete(:x_aspnetmvc_version)
+              attributes.delete(:x_aspnet_version)
+
               puts 'saving ' + a_url
               resource = ParlyResource.create! attributes
               count += 1

@@ -7,45 +7,12 @@
   %tr
     %th Title
     %th Description
-    %th Body
-    %th Accept ranges
-    %th Cache control
-    %th Content length
-    %th Content type
-    %th Date
-    %th Etag
-    %th Expires
-    %th Last modified
-    %th Pragma
-    %th Server
-    %th Set cookie
-    %th Transfer encoding
-    %th Url
-    %th X powered by
   - @parly_resources.each do |parly_resource|
     %tr
-      %td= h parly_resource.title
-      %td= h parly_resource.description
-      %td= h parly_resource.body[0..240]
-      %td= h parly_resource.accept_ranges
-      %td= h parly_resource.cache_control
-      %td= h parly_resource.content_length
-      %td= h parly_resource.content_type
-      %td= h parly_resource.date
-      %td= h parly_resource.etag
-      %td= h parly_resource.expires
-      %td= h parly_resource.last_modified
-      %td= h parly_resource.pragma
-      %td= h parly_resource.server
-      %td= h parly_resource.set_cookie
-      %td= h parly_resource.transfer_encoding
-      %td= h parly_resource.url
-      %td= h parly_resource.x_powered_by
+      %td
+        = link_to h(parly_resource.short_title), parly_resource.url
+        = " (#{parly_resource.url.split('/').last})"
+        %br
+        = h parly_resource.unique_description
 
       %td= link_to 'Show', object_url(parly_resource)
-      %td= link_to 'Edit', edit_object_url(parly_resource)
-      %td= link_to 'Destroy', object_url(parly_resource), :confirm => 'Are you sure?', :method => :delete
-
-%br/
-
-=link_to 'New parly_resource', new_object_url
