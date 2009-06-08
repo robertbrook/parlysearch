@@ -5,10 +5,10 @@ class ParlyResource < ActiveRecord::Base
   extend ActionView::Helpers::SanitizeHelper::ClassMethods
   include ActionView::Helpers::SanitizeHelper
 
-  acts_as_solr :fields => [:title, :description, :text]
+  acts_as_solr :fields => [:short_title, :description, :text]
 
   def short_title
-    title.sub('UK Parliament - ','').sub('www.parliament.uk | ','')
+    title.sub('UK Parliament - ','').sub('www.parliament.uk | ','').sub('www.parliament.uk |','')
   end
 
   def unique_description
