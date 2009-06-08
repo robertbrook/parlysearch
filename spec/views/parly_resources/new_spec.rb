@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "/parly_resources/new.html.haml" do
   include ParlyResourcesHelper
-  
+
   before(:each) do
     @parly_resource = mock_model(ParlyResource)
     @parly_resource.stub!(:new_record?).and_return(true)
@@ -11,7 +11,6 @@ describe "/parly_resources/new.html.haml" do
     @parly_resource.stub!(:body).and_return("MyText")
     @parly_resource.stub!(:accept_ranges).and_return("MyString")
     @parly_resource.stub!(:cache_control).and_return("MyString")
-    @parly_resource.stub!(:connection).and_return("MyString")
     @parly_resource.stub!(:content_length).and_return("MyString")
     @parly_resource.stub!(:content_type).and_return("MyString")
     @parly_resource.stub!(:date).and_return(Time.now)
@@ -27,20 +26,19 @@ describe "/parly_resources/new.html.haml" do
     assigns[:parly_resource] = @parly_resource
 
 
-    template.stub!(:object_url).and_return(parly_resource_path(@parly_resource)) 
-    template.stub!(:collection_url).and_return(parly_resources_path) 
+    template.stub!(:object_url).and_return(parly_resource_path(@parly_resource))
+    template.stub!(:collection_url).and_return(parly_resources_path)
   end
 
   it "should render new form" do
     render "/parly_resources/new.html.haml"
-    
+
     response.should have_tag("form[action=?][method=post]", parly_resources_path) do
       with_tag("input#parly_resource_title[name=?]", "parly_resource[title]")
       with_tag("textarea#parly_resource_description[name=?]", "parly_resource[description]")
       with_tag("textarea#parly_resource_body[name=?]", "parly_resource[body]")
       with_tag("input#parly_resource_accept_ranges[name=?]", "parly_resource[accept_ranges]")
       with_tag("input#parly_resource_cache_control[name=?]", "parly_resource[cache_control]")
-      with_tag("input#parly_resource_connection[name=?]", "parly_resource[connection]")
       with_tag("input#parly_resource_content_length[name=?]", "parly_resource[content_length]")
       with_tag("input#parly_resource_content_type[name=?]", "parly_resource[content_type]")
       with_tag("input#parly_resource_etag[name=?]", "parly_resource[etag]")
