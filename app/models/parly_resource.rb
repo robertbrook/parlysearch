@@ -18,7 +18,7 @@ class ParlyResource < ActiveRecord::Base
   end
 
   def unique_description
-    short_title != description ? description : ''
+    (description && short_title != description) ? description : ''
   end
 
   def text
