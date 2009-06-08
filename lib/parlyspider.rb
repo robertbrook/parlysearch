@@ -39,7 +39,7 @@ class ParlySpider
         end
 
         s.on :success do |a_url, response, prior_url|
-          if count > 200
+          if count > 1000
             raise 'end'
           elsif !ParlyResource.exists?(:url => a_url)
             puts "#{response.code}: #{a_url}"

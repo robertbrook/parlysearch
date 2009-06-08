@@ -1,0 +1,35 @@
+<html>
+<head>
+   <title><%= @title ? "#{@title} (parlysearch)" : "Search (parlysearch)" %></title>
+   <link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
+   <style type="text/css">
+   #custom-doc { width: 50%; min-width: 250px; }
+   h1 {font-size:138.5%;font-weight: bold;}
+   h2 {font-size:138.5%;font-weight: bold;}
+   .yui-g { font-size:131%; word-wrap: break-word;}
+   p {margin-bottom: 1em;}
+   #hd, #ft {padding: 2em 0;}
+   a {text-decoration: none;}
+   a.date {color:gray;}
+   a.name {font-weight: bold;}
+   strong {font-weight: bold;}
+   .results-url {color:green;}
+   </style>
+</head>
+<body>
+
+<div id="custom-doc" class="yui-t7">
+   <div id="hd" role="banner"><h1>parlysearch / <%= @title %></h1><p>Search the UK Parliament with Lucene</p></div>
+   <div id="bd" role="main">
+	<div class="yui-g">
+	
+	<%= yield %>
+	
+	</div>
+
+		</div>
+	   <div id="ft" role="contentinfo"><p>brookr@parliament.uk</p></div>
+	</div>
+
+	</body>
+	</html>
