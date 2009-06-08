@@ -9,7 +9,7 @@
   %p
     = link_to h(parly_resource.short_title), parly_resource.url
     %br
-    -if parly_resource.unique_description != ""
+    -if parly_resource.unique_description
       = h parly_resource.unique_description
       %br
     %span.results-url= parly_resource.url.split('/').last
