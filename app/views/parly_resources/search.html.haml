@@ -2,15 +2,14 @@
 
 - form_tag search_url do
   %p
-    = text_field_tag 'q'
+    = text_field_tag 'q', params['q']
     = submit_tag 'Search'
 
 - @parly_resources.each do |parly_resource|
   %p
+    - unless parly_resource.file_format == "HTML"
+      %span.results-fileformat= '[' + parly_resource.file_format + ']'
     = link_to h(parly_resource.short_title), parly_resource.url
-    %br
-    %span.results-fileformat-label= "File Format: " 
-    %span.results-fileformat= parly_resource.file_format
     %br
     -if parly_resource.unique_description && !parly_resource.unique_description.empty?
       = h parly_resource.unique_description
