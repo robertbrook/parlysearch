@@ -26,4 +26,14 @@ class ParlyResource < ActiveRecord::Base
     text = strip_tags(body)
     HTMLEntities.new.decode(text)
   end
+  
+  def file_format
+    if content_type.include?('text/html')
+      return 'HTML'
+    elsif content_type.include?('PDF')
+      return 'PDF / Adobe Acrobat'
+    else
+      return content_type
+    end
+  end
 end
