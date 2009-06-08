@@ -2,7 +2,7 @@
 
 - form_tag search_url do
   %p
-    = text_field_tag 'q'
+    = text_field_tag 'q', params[:q]
     = submit_tag 'Search'
 
 - @parly_resources.each do |parly_resource|
