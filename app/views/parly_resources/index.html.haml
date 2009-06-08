@@ -4,14 +4,4 @@
   %p
     = text_field_tag 'q'
     = submit_tag 'Search'
-  
-- @parly_resources.each do |parly_resource|
-  %p
-    = link_to h(parly_resource.short_title), parly_resource.url
-    %br
-    -if parly_resource.unique_description != ""
-      = h parly_resource.unique_description
-      %br
-    %span.results-url= parly_resource.url.split('/').last
-    &ndash;
-    %small= link_to 'More', object_url(parly_resource)
+    
