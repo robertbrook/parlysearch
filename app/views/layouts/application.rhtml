@@ -1,0 +1,23 @@
+<html>
+<head>
+   <title><%= @title ? "#{@title} (parlysearch)" : "Search (parlysearch)" %></title>
+   <%= stylesheet_link_tag "reset-fonts-grids" %>
+   <%= stylesheet_link_tag "screen" %>
+</head>
+<body>
+
+<div id="custom-doc" class="yui-t7">
+   <div id="hd" role="banner"><h1>parlysearch / <%= @title %></h1><p>Search the UK Parliament with Lucene</p></div>
+   <div id="bd" role="main">
+	<div class="yui-g">
+	
+	<%= yield %>
+	
+	</div>
+
+		</div>
+	   <div id="ft" role="contentinfo"><p><%= @parly_resources.count %> URLs indexed</p> <address>brookr@parliament.uk</address></div>
+	</div>
+
+	</body>
+	</html>

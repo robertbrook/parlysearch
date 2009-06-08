@@ -6,7 +6,7 @@
   =h @parly_resource.description
 %p
   %strong Body:
-  =h @parly_resource.body
+  =h truncate(@parly_resource.body, :length => 400, :omission => " …")
 %p
   %strong Accept ranges:
   =h @parly_resource.accept_ranges
