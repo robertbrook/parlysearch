@@ -1,0 +1,11 @@
+#custom-doc { width: 50%; min-width: 250px; }
+h1 {font-size:138.5%;font-weight: bold;}
+h2 {font-size:138.5%;font-weight: bold;}
+.yui-g { font-size:131%; word-wrap: break-word;}
+p {margin-bottom: 1em;}
+#hd, #ft {padding: 2em 0;}
+a {text-decoration: none;}
+a.date {color:gray;}
+a.name {font-weight: bold;}
+strong {font-weight: bold;}
+.results-url {color:green;}
