@@ -9,7 +9,7 @@ class ParlyResource < ActiveRecord::Base
 
   class << self
     def search term
-      unless term.empty?
+      if term && !term.empty?
         return find_by_solr(term).results
       else
         return Array[]
