@@ -7,7 +7,7 @@ class ParlyResourcesController < ResourceController::Base
     if params[:commit]
       redirect_to :action => 'search', :q => params[:q]
     else
-      @parly_resources = ParlyResource.find_by_solr(params[:q]).results
+      @parly_resources = ParlyResource.search(params[:q])
     end
   end
 end

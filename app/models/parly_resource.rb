@@ -7,6 +7,12 @@ class ParlyResource < ActiveRecord::Base
 
   acts_as_solr :fields => [:short_title, :description, :text]
 
+  class << self
+    def search term
+      find_by_solr(term).results
+    end
+  end
+
   def short_title
     title.sub('UK Parliament - ','').sub('www.parliament.uk | ','').sub('www.parliament.uk |','')
   end
