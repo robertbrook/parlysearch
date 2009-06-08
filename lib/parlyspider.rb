@@ -23,7 +23,7 @@ class ParlySpider
       Spider.start_at(start) do |s|
 
         s.add_url_check do |a_url|
-          add = a_url =~ %r{^http://www.parliament.uk.*} && !a_url.ends_with?('pdf')
+          add = a_url =~ %r{^http://www.parliament.uk.*} && !a_url[/(pdf|css)$/]
           add
         end
 
