@@ -1,7 +1,7 @@
 <html>
 <head>
    <title><%= @title ? "#{@title} (parlysearch)" : "Search (parlysearch)" %></title>
-   <link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
+   <%= stylesheet_link_tag "reset-fonts-grids" %>
    <style type="text/css">
    #custom-doc { width: 50%; min-width: 250px; }
    h1 {font-size:138.5%;font-weight: bold;}
