@@ -47,7 +47,7 @@ class ParlySpider
           a_url.gsub!(/\/[^\/]+\/\.\.\//, '/') while a_url.include? '/../'
           if count > 10000
             raise 'end'
-          elsif !ParlyResource.exists?(:url => a_url)
+          elsif !ParlyResource.exists?(:url => a_url) && !a_url.include?('www.facebook.com')
             begin
               puts "#{response.code}: #{a_url}"
               data = Page.new
