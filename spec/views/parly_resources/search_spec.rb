@@ -8,14 +8,17 @@ describe "/parly_resources/index.html.haml" do
     parly_resource_98.should_receive(:short_title).and_return("Short")
     parly_resource_98.should_receive(:unique_description).exactly(3).times.and_return("Unique")
     parly_resource_98.should_receive(:url).twice.and_return("MyString")
+    parly_resource_98.should_receive(:file_format).and_return("HTML")
     parly_resource_99 = mock_model(ParlyResource)
     parly_resource_99.should_receive(:short_title).and_return("Short")
     parly_resource_99.should_receive(:unique_description).twice.and_return("")
     parly_resource_99.should_receive(:url).twice.and_return("MyString")
+    parly_resource_99.should_receive(:file_format).and_return("HTML")
     parly_resource_100 = mock_model(ParlyResource)
     parly_resource_100.should_receive(:short_title).and_return("")
     parly_resource_100.should_receive(:unique_description).and_return(nil)
     parly_resource_100.should_receive(:url).twice.and_return("MyString")
+    parly_resource_100.should_receive(:file_format).and_return("HTML")
 
     assigns[:parly_resources] = [parly_resource_98, parly_resource_99, parly_resource_100]
 

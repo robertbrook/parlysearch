@@ -8,9 +8,14 @@ class ParlyResource < ActiveRecord::Base
   acts_as_solr :fields => [:short_title, :description, :text]
 
   class << self
+
     def search term, offset, limit
-      solr_results = find_by_solr(term, :offset => offset, :limit => limit)
-      return [solr_results.results, solr_results.total]
+      if term.blank?
+        []
+      else
+        solr_results = find_by_solr(term, :offset => offset, :limit => limit)
+        return [solr_results.results, solr_results.total]
+      end
     end
   end
 
