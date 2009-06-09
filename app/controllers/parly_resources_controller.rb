@@ -13,7 +13,7 @@ class ParlyResourcesController < ResourceController::Base
       redirect_to :action => 'search', :q => @search_query
     else
       params[:page] ||= '1'
-      @entries = WillPaginate::Collection.create(params[:page], 5) do |pager|
+      @entries = WillPaginate::Collection.create(params[:page], 10) do |pager|
         @parly_resources, total = ParlyResource.search(@search_query, pager.offset, pager.per_page)
         pager.replace(@parly_resources)
         pager.total_entries = total
