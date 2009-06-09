@@ -19,3 +19,6 @@
 [submodule "vendor/plugins/acts_as_solr"]
 	path = vendor/plugins/acts_as_solr
 	url = git://github.com/mattmatt/acts_as_solr.git
+[submodule "vendor/plugins/will_paginate"]
+	path = vendor/plugins/will_paginate
+	url = git://github.com/mislav/will_paginate.git

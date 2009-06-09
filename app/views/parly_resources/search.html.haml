@@ -1,15 +1,23 @@
--@title = 'Search'
+- @title = 'Search'
 
 - form_tag search_url do
   %p
     = text_field_tag 'q'
     = submit_tag 'Search'
 
+- if @parly_resources.empty?
+  %p= "No results found for: #{@search_query}"
+- else
+  - paginator_content = will_paginate @entries
+  - if paginator_content
+    .top-pagination
+      %p= paginator_content
+
 - @parly_resources.each do |parly_resource|
   %p
     = link_to h(parly_resource.short_title), parly_resource.url
     %br
-    %span.results-fileformat-label= "File Format: " 
+    %span.results-fileformat-label= "File Format: "
     %span.results-fileformat= parly_resource.file_format
     %br
     -if parly_resource.unique_description && !parly_resource.unique_description.empty?

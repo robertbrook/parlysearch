@@ -8,8 +8,9 @@ class ParlyResource < ActiveRecord::Base
   acts_as_solr :fields => [:short_title, :description, :text]
 
   class << self
-    def search term
-      find_by_solr(term).results
+    def search term, offset, limit
+      solr_results = find_by_solr(term, :offset => offset, :limit => limit)
+      return [solr_results.results, solr_results.total]
     end
   end
 
@@ -26,7 +27,7 @@ class ParlyResource < ActiveRecord::Base
     text = strip_tags(body)
     HTMLEntities.new.decode(text)
   end
-  
+
   def file_format
     if content_type.include?('text/html')
       return 'HTML'
