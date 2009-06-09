@@ -27,6 +27,20 @@ class ParlyResource < ActiveRecord::Base
     (description && short_title != description) ? description : ''
   end
 
+  def meta_fields
+    doc = Hpricot body
+    meta = (doc/'/html/head/meta')
+    meta.inject([]) do |list, x|
+      if x['name'] && !x['content'].to_s.blank?
+        list << [ x['name'], x['content'].to_s ]
+      end
+      list
+    end
+
+    # reload! ; y ParlyResource.all.collect{|x| x.meta_fields.collect{|b| b[0]} }.flatten.uniq.sort
+    # ['pagesubject','sitesectiontype','subsectiontype','keywords']
+  end
+
   def text
     return nil unless body
     text = strip_tags(body)

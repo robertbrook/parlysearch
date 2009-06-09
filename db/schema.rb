@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090604103033) do
+ActiveRecord::Schema.define(:version => 20090609142033) do
 
   create_table "parly_resources", :force => true do |t|
     t.string   "title"
@@ -31,6 +31,19 @@ ActiveRecord::Schema.define(:version => 20090604103033) do
     t.string   "x_powered_by"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "pagesubject"
+    t.string   "sitesectiontype"
+    t.string   "subsectiontype"
+    t.string   "keywords"
+    t.string   "subject"
+    t.string   "publisher"
+    t.string   "author"
+    t.string   "objecttype"
+    t.string   "identifier"
+    t.string   "source"
+    t.string   "place"
+    t.string   "isbn"
+    t.string   "report"
   end
 
   add_index "parly_resources", ["url"], :name => "index_parly_resources_on_url"

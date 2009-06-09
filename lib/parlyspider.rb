@@ -21,9 +21,11 @@ class ParlySpider
       @pages = []
       count = 0
       Spider.start_at(start) do |s|
-
         s.add_url_check do |a_url|
-          add = a_url =~ %r{^http://www.parliament.uk.*} && !a_url[/(pdf|css)$/]
+          add = a_url =~ %r{^http://([^\.]+\.)+parliament\.uk.*} && !a_url[/(pdf|css)$/]
+          if a_url.include?('scottish.parliament')
+            add = false
+          end
           add
         end
 
@@ -39,41 +41,65 @@ class ParlySpider
         end
 
         s.on :success do |a_url, response, prior_url|
-          if count > 1000
+          puts "***************************************"
+          puts "#{count} #{a_url}"
+
+          a_url.gsub!(/\/[^\/]+\/\.\.\//, '/') while a_url.include? '/../'
+          if count > 10000
             raise 'end'
           elsif !ParlyResource.exists?(:url => a_url)
-            puts "#{response.code}: #{a_url}"
-            data = Page.new
-            data.url = a_url
-            data.body = response.body
             begin
+              puts "#{response.code}: #{a_url}"
+              data = Page.new
+              data.url = a_url
+              data.body = response.body
               doc = Hpricot data.body
               data.title = doc.at('/html/head/title/text()').to_s
-              data.description = doc.at('/html/head/meta[@name="description"]')['content'].to_s
-            rescue
-            end
-            response.header.each do |k,v|
-              data.morph(k,v)
-            end
+              data.description = doc.at('/html/head/meta[@name="description"]')['content'].to_s if doc.at('/html/head/meta[@name="description"]')
 
-            begin
+              response.header.each do |k,v|
+                data.morph(k,v)
+              end
+              meta = (doc/'/html/head/meta')
+              meta_attributes = meta.each do |m|
+                name = m['name']
+                content = m['content'].to_s
+                if name && !content.blank? && !name[/^(title|description|date)$/i]
+                  if data.respond_to?(name.downcase.to_sym) && (value = data.send(name.downcase.to_sym))
+                    value = [value] unless value.is_a?(Array)
+                    value << content
+                    data.morph(name, value)
+                  else
+                    data.morph(name, content)
+                  end
+                end
+              end
+
               data.date = Time.parse(data.date) if data.date
               data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
               attributes = data.morph_attributes
-              attributes.delete(:connection)
-              attributes.delete(:x_aspnetmvc_version)
-              attributes.delete(:x_aspnet_version)
+              attributes.each do |key, value|
+                if value.is_a?(Array)
+                  attributes[key] = value.inspect
+                end
+              end
+              [:connection, :x_aspnetmvc_version, :x_aspnet_version, :language,
+              :viewport, :version, :originator, :generator, :x_pingback, :pingback,
+              :content_location, :progid, :otheragent, :form, :robots].each do |x|
+                attributes.delete(x)
+              end
 
               puts 'saving ' + a_url
               resource = ParlyResource.create! attributes
               count += 1
+
             rescue Exception => e
               puts e.class.name
               puts e.to_s
+              raise e
             end
-
-            @pages << resource
           end
+          puts "======================================="
         end
 
         s.on :every do |a_url, response, prior_url|
