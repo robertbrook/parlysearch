@@ -2,6 +2,7 @@ require 'rubygems'
 require 'spider'
 require 'morph'
 require 'hpricot'
+require 'uri'
 
 class ParlySpider
   class << self
@@ -45,9 +46,13 @@ class ParlySpider
 
         s.on :success do |a_url, response, prior_url|
           puts "***************************************"
-          puts "#{count} #{a_url}"
 
           a_url.gsub!(/\/[^\/]+\/\.\.\//, '/') while a_url.include? '/../'
+          u = URI.parse(a_url)
+          a_url = u.to_s.split(u.path).first + u.path
+
+          puts "#{count} #{a_url}"
+
           if count > 10000
             raise 'end'
           elsif !ParlyResource.exists?(:url => a_url) && !a_url.include?('www.facebook.com')
