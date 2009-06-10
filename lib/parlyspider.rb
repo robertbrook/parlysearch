@@ -87,7 +87,14 @@ class ParlySpider
                 end
               end
 
-              data.date = Time.parse(data.date) if data.date
+              begin
+                data.date = Time.parse(data.date) if data.date
+              rescue Exception => e
+                puts "cannot parse date: #{data.date}"
+                puts e.class.name
+                puts e.to_s
+                puts e.backtrace.join("\n")
+              end
               data.response_date = Time.parse(data.response_date) if data.response_date
               data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
               data.coverage = Time.parse(data.coverage) if data.respond_to?(:coverage) && data.coverage
@@ -99,7 +106,8 @@ class ParlySpider
               end
               [:connection, :x_aspnetmvc_version, :x_aspnet_version, :language,
               :viewport, :version, :originator, :generator, :x_pingback, :pingback,
-              :content_location, :progid, :otheragent, :form, :robots].each do |x|
+              :content_location, :progid, :otheragent, :form, :robots,
+              :columns].each do |x|
                 attributes.delete(x)
               end
 
@@ -110,11 +118,13 @@ class ParlySpider
               rescue Exception => e
                 puts e.class.name
                 puts e.to_s
+                puts e.backtrace.join("\n")
               end
 
             rescue Exception => e
               puts e.class.name
               puts e.to_s
+              puts e.backtrace.join("\n")
               raise e
             end
           end
