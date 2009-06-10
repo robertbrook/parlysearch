@@ -27,7 +27,8 @@ class ParlySpider
           if a_url.include?('scottish.parliament') ||
             a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8040702.htm' ||
             a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
-            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm'
+            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
             add = false
           end
           add
