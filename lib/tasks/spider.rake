@@ -16,7 +16,8 @@ namespace :parlysearch do
       puts e.class.name
       puts e.to_s
     end
-    ParlySpider.spider
+    start = ENV['start']
+    ParlySpider.spider start
   end
 end
 
