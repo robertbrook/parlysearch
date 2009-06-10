@@ -107,7 +107,7 @@ class ParlySpider
               [:connection, :x_aspnetmvc_version, :x_aspnet_version, :language,
               :viewport, :version, :originator, :generator, :x_pingback, :pingback,
               :content_location, :progid, :otheragent, :form, :robots,
-              :columns, :vs_targetschema].each do |x|
+              :columns, :vs_targetschema, :vs_defaultclientscript].each do |x|
                 attributes.delete(x)
               end
 
