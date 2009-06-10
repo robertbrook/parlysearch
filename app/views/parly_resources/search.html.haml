@@ -20,9 +20,10 @@
     %span.results-fileformat-label= "File Format: "
     %span.results-fileformat= parly_resource.file_format
     %br
-    -if parly_resource.unique_description && !parly_resource.unique_description.empty?
+    - if parly_resource.unique_description && !parly_resource.unique_description.empty?
       = h parly_resource.unique_description
       %br
+    = excerpts(parly_resource.text, @search_query)
     %span.results-url= parly_resource.url.split('/').last
     &ndash;
     %small= link_to 'More', object_url(parly_resource)
