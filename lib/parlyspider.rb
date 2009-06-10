@@ -28,7 +28,13 @@ class ParlySpider
             a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8040702.htm' ||
             a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
             a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm' ||
-            a_url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
+            a_url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/844/8062325.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495171.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495144.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495110.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495107.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/jt200203/jtselect/jtrights/188/188we18.htm'
             add = false
           end
           add
