@@ -23,7 +23,9 @@ class ParlySpider
       Spider.start_at(start) do |s|
         s.add_url_check do |a_url|
           add = a_url =~ %r{^http://([^\.]+\.)+parliament\.uk.*} && !a_url[/(pdf|css)$/]
-          if a_url.include?('scottish.parliament')
+          if a_url.include?('scottish.parliament') ||
+            a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8040702.htm' ||
+            a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm'
             add = false
           end
           add
@@ -55,16 +57,20 @@ class ParlySpider
               data.body = response.body
               doc = Hpricot data.body
               data.title = doc.at('/html/head/title/text()').to_s
-              data.description = doc.at('/html/head/meta[@name="description"]')['content'].to_s if doc.at('/html/head/meta[@name="description"]')
 
               response.header.each do |k,v|
                 data.morph(k,v)
               end
+              if data.date
+                data.response_date = data.date
+                data.date = nil
+              end
+
               meta = (doc/'/html/head/meta')
               meta_attributes = meta.each do |m|
                 name = m['name']
                 content = m['content'].to_s
-                if name && !content.blank? && !name[/^(title|description|date)$/i]
+                if name && !content.blank? && !name[/^(title)$/i]
                   if data.respond_to?(name.downcase.to_sym) && (value = data.send(name.downcase.to_sym))
                     value = [value] unless value.is_a?(Array)
                     value << content
@@ -76,7 +82,9 @@ class ParlySpider
               end
 
               data.date = Time.parse(data.date) if data.date
+              data.response_date = Time.parse(data.response_date) if data.response_date
               data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
+              data.coverage = Time.parse(data.coverage) if data.respond_to?(:coverage) && data.coverage
               attributes = data.morph_attributes
               attributes.each do |key, value|
                 if value.is_a?(Array)
