@@ -23,7 +23,7 @@ class ParlySpider
       count = 0
       Spider.start_at(start) do |s|
         s.add_url_check do |a_url|
-          add = a_url =~ %r{^http://([^\.]+\.)+parliament\.uk.*} && !a_url[/(pdf|css)$/]
+          add = (a_url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !a_url[/(pdf|css)$/] && !a_url[/(#[^\/]+)$/]
           if a_url.include?('scottish.parliament') ||
             a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8040702.htm' ||
             a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
