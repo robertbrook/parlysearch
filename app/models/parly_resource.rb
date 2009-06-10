@@ -5,6 +5,8 @@ class ParlyResource < ActiveRecord::Base
   extend ActionView::Helpers::SanitizeHelper::ClassMethods
   include ActionView::Helpers::SanitizeHelper
 
+  validates_presence_of :title
+
   acts_as_solr :fields => [:short_title, :description, :text]
 
   class << self

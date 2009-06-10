@@ -97,9 +97,14 @@ class ParlySpider
                 attributes.delete(x)
               end
 
-              puts 'saving ' + a_url
-              resource = ParlyResource.create! attributes
-              count += 1
+              begin
+                puts 'saving ' + a_url
+                resource = ParlyResource.create! attributes
+                count += 1
+              rescue Exception => e
+                puts e.class.name
+                puts e.to_s
+              end
 
             rescue Exception => e
               puts e.class.name
