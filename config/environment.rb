@@ -41,3 +41,11 @@ Rails::Initializer.run do |config|
 end
 
 require 'lib/parlyspider.rb'
+
+ActiveSupport::CoreExtensions::Date::Conversions::DATE_FORMATS.merge!(
+  :month_year => "%B %Y"
+)
+ActiveSupport::CoreExtensions::Time::Conversions::DATE_FORMATS.merge!(
+  :month_year => "%B %Y"
+)
+
