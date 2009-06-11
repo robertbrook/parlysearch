@@ -7,9 +7,24 @@ class ParlyResource < ActiveRecord::Base
 
   validates_presence_of :title
 
-  acts_as_solr :fields => [:short_title, :unique_description, :text, {:date => :facet}]
+  acts_as_solr :fields => [:short_title, :unique_description, :text, {:resource_date => :date}]
 
   class << self
+
+    def reindex
+      find_each do |item|
+        begin
+          item.save!
+          print '.'
+          $stdout.flush
+        rescue Exception => e
+          puts item.inspect
+          puts e.class.name
+          puts e.to_s
+        end
+      end
+    end
+
     def search term, offset, limit, sort=nil
       if term.blank?
         []
@@ -23,14 +38,18 @@ class ParlyResource < ActiveRecord::Base
     private
       def sort_options sort
         case sort
-          when  'date'
-           { :order => 'date asc' }
-          when 'reverse_date'
-           { :order => 'date desc'}
+          when 'newest_first'
+            { :order => 'resource_date desc' }
+          when 'oldest_first'
+            { :order => 'resource_date asc'}
           else
             {}
           end
       end
+  end
+
+  def resource_date
+    date ? date.to_date : nil
   end
 
   def short_title
