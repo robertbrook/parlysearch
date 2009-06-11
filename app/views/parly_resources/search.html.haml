@@ -15,15 +15,15 @@
 
 - @parly_resources.each do |parly_resource|
   %p
+    - if parly_resource.file_format != "HTML"
+      %span.results-fileformat= "[" + parly_resource.file_format + "]"
     = link_to h(parly_resource.short_title), parly_resource.url
-    %br
-    %span.results-fileformat-label= "File Format: "
-    %span.results-fileformat= parly_resource.file_format
     %br
     - if parly_resource.unique_description && !parly_resource.unique_description.empty?
       = h parly_resource.unique_description
       %br
     = excerpts(parly_resource.text, @search_query)
+    %br
     %span.results-url= parly_resource.url.split('/').last
     &ndash;
     %small= link_to 'More', object_url(parly_resource)
