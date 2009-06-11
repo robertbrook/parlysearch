@@ -1,8 +1,4 @@
 - paginator_content = will_paginate(pagination_navbar)
 - if paginator_content
-  .top-pagination
-    %p= paginator_content
-%p
-  = link_to 'Show newest first', search_url(:q => @search_query, :sort => 'newest_first')
-  |
-  = link_to 'Show oldest first', search_url(:q => @search_query, :sort => 'oldest_first')
+  %p.pagination= paginator_content
+

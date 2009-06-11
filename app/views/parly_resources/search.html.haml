@@ -5,5 +5,10 @@
 - if @parly_resources.empty?
   %p= "No results found for: #{@search_query}"
 - else
-  = render :partial => 'pagination_navbar', :object => @paginator
+  %p
+    = link_to 'Show newest first', search_url(:q => @search_query, :sort => 'newest_first')
+    |
+    = link_to 'Show oldest first', search_url(:q => @search_query, :sort => 'oldest_first')
   = render :partial => 'search_result', :collection => @parly_resources
+  = render :partial => 'pagination_navbar', :object => @paginator
+  
