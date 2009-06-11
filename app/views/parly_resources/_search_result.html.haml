@@ -10,7 +10,7 @@
     %br
   = excerpts(search_result.text, @search_query)
   %br
-  %span.results-url= search_result.url
+  %span.results-url= search_result.url[7..-1]
   &ndash;
   %small= link_to 'Cached', object_url(search_result)
 
