@@ -4,14 +4,15 @@
   = link_to h(search_result.short_title), search_result.url
   %br
   - if search_result.date
-    %span.results-date= search_result.date.to_s(:month_year)
+    %span.results-date= "Last updated " + time_ago_in_words(search_result.date) + " ago"
     %br
   - if search_result.unique_description && !search_result.unique_description.empty?
+    %br
     = h search_result.unique_description
     %br
   = excerpts(search_result.text, @search_query)
   %br
-  %span.results-url= search_result.url.split('/').last
+  %span.results-url= search_result.url
   &ndash;
   %small= link_to 'More', object_url(search_result)
 
