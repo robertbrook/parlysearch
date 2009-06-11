@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe ParlyResource do
   before(:each) do
-    @parly_resource = ParlyResource.new
+    @parly_resource = ParlyResource.new :title => 'Hansard debates'
   end
 
   it "should be valid" do

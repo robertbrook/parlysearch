@@ -8,7 +8,7 @@
 - if @parly_resources.empty?
   %p= "No results found for: #{@search_query}"
 - else
-  - paginator_content = will_paginate @entries
+  - paginator_content = will_paginate(@paginator)
   - if paginator_content
     .top-pagination
       %p= paginator_content
