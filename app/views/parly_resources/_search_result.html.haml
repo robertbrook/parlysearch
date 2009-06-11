@@ -1,16 +1,16 @@
 %p
+  - if search_result.file_format != "HTML"
+    %span.results-fileformat= "[" + search_result.file_format + "]"
   = link_to h(search_result.short_title), search_result.url
   %br
   - if search_result.date
-    %span.results-date-label= "Date: "
     %span.results-date= search_result.date.to_s(:month_year)
-  %span.results-fileformat-label= "File Format: "
-  %span.results-fileformat= search_result.file_format
-  %br
+    %br
   - if search_result.unique_description && !search_result.unique_description.empty?
     = h search_result.unique_description
     %br
   = excerpts(search_result.text, @search_query)
+  %br
   %span.results-url= search_result.url.split('/').last
   &ndash;
   %small= link_to 'More', object_url(search_result)
