@@ -9,5 +9,5 @@ a.date {color:gray;}
 a.name {font-weight: bold;}
 strong {font-weight: bold;}
 .results-url {color:green;}
-.results-fileformat-label {color:gray;font-size:0.8em;}
-.results-fileformat {font-size:0.8em;}
+.results-date-label, .results-fileformat-label {color:gray;font-size:0.8em;}
+.results-date, .results-fileformat {font-size:0.8em;}

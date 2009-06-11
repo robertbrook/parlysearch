@@ -45,7 +45,12 @@ class ParlyResource < ActiveRecord::Base
 
   def text
     return nil unless body
-    text = strip_tags(body)
+    text = body
+    text.gsub!('<!','$$$!')
+    text.gsub!(/<script[^>]+>([^<]+)<\/script>/,'')
+    text.gsub!(/<style[^>]+>([^<]+)<\/style>/,'')
+    text.gsub!('$$$!','<!')
+    text = strip_tags(text)
     HTMLEntities.new.decode(text)
   end
 
