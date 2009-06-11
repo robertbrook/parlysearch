@@ -1,18 +1,17 @@
-%p
+%p.search-result
   - if search_result.file_format != "HTML"
     %span.results-fileformat= "[" + search_result.file_format + "]"
   = link_to h(search_result.short_title), search_result.url
-  %br
   - if search_result.date
-    %span.results-date= "Last updated " + time_ago_in_words(search_result.date) + " ago"
+    %span.results-date= "&ndash; last updated " + time_ago_in_words(search_result.date) + " ago"
     %br
   - if search_result.unique_description && !search_result.unique_description.empty?
     %br
     = h search_result.unique_description
-    %br
+  %br
   = excerpts(search_result.text, @search_query)
   %br
   %span.results-url= search_result.url
   &ndash;
-  %small= link_to 'More', object_url(search_result)
+  %small= link_to 'Cached', object_url(search_result)
 
