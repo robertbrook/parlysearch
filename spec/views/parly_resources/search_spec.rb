@@ -31,8 +31,8 @@ describe "/parly_resources/index.html.haml" do
     template.stub!(:excerpts).and_return 'text with search term highlighted'
   end
 
-  # it "should render list of parly_resources" do
-  #   render "/parly_resources/search.html.haml"
-  # end
+  it "should render list of parly_resources" do
+    render "/parly_resources/search.html.haml"
+  end
 end
 
