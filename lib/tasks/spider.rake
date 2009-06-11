@@ -6,6 +6,7 @@ namespace :parlysearch do
   task :spider => :environment do
     begin
       system 'rake solr:stop' # ensure solr is stopped
+      p "stopping solr"
     rescue Exception => e
       puts e.class.name
       puts e.to_s
