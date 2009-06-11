@@ -1,4 +1,5 @@
 - form_tag search_url do
   %p
-    = text_field_tag 'q', params[:q]
+    = '<input autocomplete="on" type="search" autosave="search-parliament-uk-autosave" autofocus results="20" id="q" name="q" size="30" value="' + params[:q] + '"/>'
     = submit_tag 'Search'
+
