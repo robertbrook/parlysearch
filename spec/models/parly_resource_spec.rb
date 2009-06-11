@@ -12,7 +12,26 @@ describe ParlyResource do
   describe "when preparing text to send to solr" do
 
     before do
-      @parly_resource.body = 'some test text with a <col>34</col> tag &amp; <b>another</b> tag'
+      @parly_resource.body = "<html>
+        <head>
+          <title>Title</title>
+          <style type=\"text/css\">
+          .tree {display:block;font:bold 1.6em Arial, sans-serif;line-height:2em;}
+          <!--[if IE 6]>
+          #space {width:300px !important; overflow:hidden !important;}
+          <![endif]-->
+        </style>
+  <script type=\"text/javascript\">
+     displayClock();
+  </script>
+          </head>
+          <body>
+            <p>Just
+              <script type=\"text/javascript\">js</script>
+              some test text with a <col>34</col> tag &amp; <b>another</b> tag</p>
+              <!-- a comment -->
+          </body>
+          </html>"
     end
 
     it 'should remove any col tags and their contents' do
@@ -26,5 +45,22 @@ describe ParlyResource do
     it 'should decode any html entities' do
       @parly_resource.text.should include('&')
     end
+
+    it 'should remove contents of script tags' do
+      @parly_resource.text.should_not include('tree')
+      @parly_resource.text.should_not include('displayClock')
+      @parly_resource.text.should_not include('space')
+      @parly_resource.text.should_not include('js')
+      @parly_resource.text.should include('Just')
+    end
+
+    it 'should keep head/title text' do
+      @parly_resource.text.should include('Title')
+    end
+
+    it 'should remove comment text' do
+      @parly_resource.text.should_not include('comment')
+    end
+
   end
 end
