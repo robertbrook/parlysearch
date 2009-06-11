@@ -24,7 +24,13 @@ describe ParlyResource do
   <script type=\"text/javascript\">
      displayClock();
   </script>
-          </head>
+            <SCRIPT LANGUAGE=\"JavaScript1.1\" type=\"text/javascript\">
+                        var gDomain=\"www.stats.tso.co.uk\";
+            </SCRIPT>
+            <NOSCRIPT>
+              no script
+            </NOSCRIPT>
+  </head>
           <body>
             <p>Just
               <script type=\"text/javascript\">js</script>
@@ -51,6 +57,8 @@ describe ParlyResource do
       @parly_resource.text.should_not include('displayClock')
       @parly_resource.text.should_not include('space')
       @parly_resource.text.should_not include('js')
+      @parly_resource.text.should_not include('var')
+      @parly_resource.text.should_not include('no script')
       @parly_resource.text.should include('Just')
     end
 

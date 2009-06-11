@@ -61,8 +61,9 @@ class ParlyResource < ActiveRecord::Base
     return nil unless body
     text = String.new(body)
     text.gsub!('<!','$$$!')
-    text.gsub!(/<script[^>]+>([^<]+)<\/script>/,'')
-    text.gsub!(/<style[^>]+>([^<]+)<\/style>/,'')
+    text.gsub!(/<noscript[^>]?>([^<]+)<\/noscript>/i,'')
+    text.gsub!(/<script[^>]+>([^<]+)<\/script>/i,'')
+    text.gsub!(/<style[^>]+>([^<]+)<\/style>/i,'')
     text.gsub!('$$$!','<!')
     text = strip_tags(text)
     convert_entities(text)
