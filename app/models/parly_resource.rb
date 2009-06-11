@@ -7,7 +7,8 @@ class ParlyResource < ActiveRecord::Base
 
   validates_presence_of :title
 
-  acts_as_solr :fields => [:short_title, :unique_description, :text, {:resource_date => :date}]
+  acts_as_solr :fields => [:short_title, :unique_description, :text, {:resource_date => :date}],
+               :facets => [:unique_description]
 
   class << self
 
@@ -30,6 +31,7 @@ class ParlyResource < ActiveRecord::Base
         []
       else
         options = sort_options(sort).merge(:offset => offset, :limit => limit)
+        options = options.merge(:facets=>{:zeros=>false,:fields=>[:unique_description]})
         solr_results = find_by_solr(term, options)
         return [solr_results.results, solr_results.total]
       end
