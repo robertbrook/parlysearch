@@ -63,6 +63,10 @@ class ParlyResource < ActiveRecord::Base
     text = (description && short_title != description) ? description : ''
     convert_entities(text)
   end
+  
+  def unique_description?
+    unique_description && !unique_description.empty?
+  end
 
   def meta_fields
     doc = Hpricot body
