@@ -1,0 +1,24 @@
+development:
+  adapter: mysql
+  database: parlysearch_development
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+  encoding: utf8
+
+test:
+  adapter: mysql
+  database: parlysearch_development
+  username: root
+  password:
+  socket: /tmp/mysql.sock
+  encoding: utf8
+
+production:
+  adapter: mysql
+  database: parlysearch_development
+  username: root
+  password:
+  socket: /var/run/mysqld/mysqld.sock
+  encoding: utf8
+

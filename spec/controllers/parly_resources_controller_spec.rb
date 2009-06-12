@@ -5,7 +5,7 @@ describe ParlyResourcesController do
 
     before(:each) do
       @parly_resource = mock_model(ParlyResource)
-      ParlyResource.stub!(:search).and_return([@parly_resource])
+      ParlyResource.stub!(:search).and_return([[@parly_resource], 1])
     end
 
     def do_get
@@ -23,7 +23,7 @@ describe ParlyResourcesController do
     end
 
     it "should find all parly_resources" do
-      ParlyResource.should_receive(:search).with('term').and_return([@parly_resource])
+      ParlyResource.should_receive(:search).with('term', 0, 10).and_return([[@parly_resource], 1])
       do_get
     end
 

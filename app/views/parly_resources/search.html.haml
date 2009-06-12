@@ -1,12 +1,12 @@
--@title = 'Search'
+- @title = 'Search'
 
-- form_tag search_url do
-  %p
-    = text_field_tag 'q', params[:q]
-    = submit_tag 'Search'
+= render :partial => 'search_form'
 
-- @parly_resources.each do |parly_resource|
+- if @parly_resources.empty?
+  %p= "No results found for: #{@search_query}"
+- else
   %p
+<<<<<<< HEAD:app/views/parly_resources/search.html.haml
     - unless parly_resource.file_format == "HTML"
       %span.results-fileformat= '[' + parly_resource.file_format + ']'
     = link_to h(parly_resource.short_title), parly_resource.url
@@ -18,3 +18,11 @@
     &ndash;
     %small= link_to 'More', object_url(parly_resource)
 
+=======
+    = link_to 'Show newest first', search_url(:q => @search_query, :sort => 'newest_first')
+    |
+    = link_to 'Show oldest first', search_url(:q => @search_query, :sort => 'oldest_first')
+  = render :partial => 'search_result', :collection => @parly_resources
+  = render :partial => 'pagination_navbar', :object => @paginator
+  
+>>>>>>> f61c8c1b981faf1ed03b9b9f59f2ee613021bda3:app/views/parly_resources/search.html.haml

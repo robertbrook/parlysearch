@@ -4,10 +4,9 @@
    <%= stylesheet_link_tag "reset-fonts-grids" %>
    <%= stylesheet_link_tag "screen" %>
 </head>
-<body>
-
+<body id="search-parliament-uk">
 <div id="custom-doc" class="yui-t7">
-   <div id="hd" role="banner"><h1>parlysearch / <%= @title %></h1><p>Search the UK Parliament with Lucene</p></div>
+   <div id="hd" role="banner"><h1><a href="/">parlysearch</a> / <%= @title %></h1><p>Search the UK Parliament with Lucene</p></div>
    <div id="bd" role="main">
 	<div class="yui-g">
 	
@@ -16,7 +15,11 @@
 	</div>
 
 		</div>
+<<<<<<< HEAD:app/views/layouts/application.rhtml
 	   <div id="ft" role="contentinfo"><a href="http://github.com/robertbrook/parlysearch">github.com/robertbrook/parlysearch</a></div>
+=======
+	   <div id="ft" role="contentinfo"><a href="http://github.com/robertbrook/parlysearch">github.com/robertbrook/parlysearch</a><address>brookr@parliament.uk</address></div>
+>>>>>>> f61c8c1b981faf1ed03b9b9f59f2ee613021bda3:app/views/layouts/application.rhtml
 	</div>
 
 	</body>
