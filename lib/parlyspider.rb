@@ -24,10 +24,10 @@ class ParlySpider
       Spider.start_at(start) do |s|
         s.add_url_check do |a_url|
           add = (a_url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !a_url[/(pdf|css)$/] && !a_url[/(#[^\/]+)$/]
-          if a_url.include?('scottish.parliament')
+          if a_url.include?('scottish.parliament') ||
+            a_url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
             # a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
             # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm' ||
             # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/844/8062325.htm' ||
             # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495171.htm' ||
             # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495144.htm' ||
