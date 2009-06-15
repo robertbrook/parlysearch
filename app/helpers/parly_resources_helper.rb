@@ -47,8 +47,33 @@ module ParlyResourcesHelper
     excerpts
   end
 
+  def excerpt_words text, phrase, words=20, omission="..."
+    if text && phrase
+      phrase = Regexp.escape(phrase)
+      start_phrase = ""
+      end_phrase = ""
+
+      if found_pos = text.mb_chars =~ /(#{phrase})/i
+        before = text[0..found_pos-1].split(' ')
+        after = text[found_pos + phrase.mb_chars.length..text.mb_chars.length].split(' ')
+
+        i=0
+        before.reverse!
+        while i < words
+          start_phrase << before[i] << " " unless before[i].nil?
+          end_phrase << after[i] << " " unless after[i].nil?
+          i+=1
+        end
+        
+        start_phrase << phrase << " " << end_phrase.strip << omission
+      else
+        ""
+      end
+    end
+  end
+
   def tidy_excerpt text, term, chars
-    excerpt(text, term, chars, "…") << "<br/>"
+    excerpt_words(text, term) << "<br/>"
   end
 
   def add_term text, texts, char_count, term
