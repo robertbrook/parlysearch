@@ -5,3 +5,4 @@ config/database.yml
 .DS_Store
 doc
 solr/*
+db/development_structure.sql

@@ -23,7 +23,7 @@ describe ParlyResourcesController do
     end
 
     it "should find all parly_resources" do
-      ParlyResource.should_receive(:search).with('term', 0, 10).and_return([[@parly_resource], 1])
+      ParlyResource.should_receive(:search).with('term', 0, 10, nil).and_return([[@parly_resource], 1])
       do_get
     end
 
