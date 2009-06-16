@@ -1,7 +1,7 @@
 %p.search-result
   - unless search_result.file_format == "HTML"
     %span.results-fileformat= "[" + search_result.file_format + "]"
-  = link_to h(search_result.short_title), search_result.url
+  = link_to h(search_result.short_title), search_result.url, :title => search_result.url
   - if search_result.date
     %span.results-date= "&ndash; last updated " + time_ago_in_words(search_result.date) + " ago"
   %br
