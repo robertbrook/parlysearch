@@ -88,9 +88,14 @@ class ParlySpider
         doc = Hpricot data.body
         data.title = doc.at('/html/head/title/text()').to_s
 
+        if data.title == "Broadband Link - Error"
+          raise "Router caching error, indexing aborted"
+        end
+
         response.header.each do |k,v|
           data.morph(k,v)
         end
+        
         if data.date
           data.response_date = data.date
           data.date = nil
