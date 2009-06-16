@@ -1,5 +1,4 @@
 require 'htmlentities'
-require 'lib/solr_cell.rb'
 
 class ParlyResource < ActiveRecord::Base
 
@@ -40,14 +39,14 @@ class ParlyResource < ActiveRecord::Base
     def page_start(results_per_page, current_page=1)
       current_page = 1 if current_page.nil?
       current_page = current_page.to_i
-      
+
       (current_page - 1) * results_per_page + 1
     end
-    
+
     def page_end(total_results, results_per_page, current_page=1)
       current_page = 1 if current_page.nil?
       current_page = current_page.to_i
-      
+
       page_start = page_start(results_per_page, current_page)
       if page_start + results_per_page - 1 > total_results
         total_results
