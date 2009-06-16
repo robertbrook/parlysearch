@@ -69,6 +69,8 @@ describe "/parly_resources/show.html.haml" do
     @parly_resource.stub!(:report).and_return(nil)
     @parly_resource.stub!(:identifier).and_return(nil)
     @parly_resource.stub!(:keywords).and_return(nil)
+    @parly_resource.stub!(:short_title).and_return("MyString")
+    @parly_resource.stub!(:language).and_return("MyString")
     @parly_resource.stub!(:x_powered_by).and_return("MyString")
 
     assigns[:parly_resource] = @parly_resource
