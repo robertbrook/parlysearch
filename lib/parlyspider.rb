@@ -9,81 +9,85 @@ class ParlySpider
     def spider start='http://www.parliament.uk/'
       begin
         do_spider start
-      rescue
-        # ignore
+      rescue Exception => e
+        puts e.class.name
+        puts e.to_s
+        puts e.backtrace.join("\n")
       end
       @pages
     end
-  end
 
-  private
+    private
 
-    def self.do_spider start
+    def do_spider start
       @pages = []
       @count = 0
       Spider.start_at(start) do |s|
-        s.add_url_check do |a_url|
-          add = (a_url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !a_url[/(pdf|css)$/] && !a_url[/(#[^\/]+)$/]
-          if a_url.include?('scottish.parliament') ||
-            a_url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
-            # a_url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/844/8062325.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495171.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495144.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495110.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495107.htm' ||
-            # a_url == 'http://www.publications.parliament.uk/pa/jt200203/jtselect/jtrights/188/188we18.htm'
-            add = false
-          end
-          add
-        end
-
-        s.setup do |a_url|
-          # if a_url =~ %r{^http://.*wikipedia.*}
-            # s.headers['If-Modified-Since'] = 'Wed, 29 Apr 2009 08:14:31 GMT'
-          # end
-        end
-
-        s.on :failure do |a_url, response, prior_url|
-          puts "URL failed: #{a_url}"
-          puts " linked from #{prior_url}"
-        end
-
-        s.on :success do |a_url, response, prior_url|
-          puts "***************************************"
-
-          a_url.gsub!(/\/[^\/]+\/\.\.\//, '/') while a_url.include? '/../'
-          u = URI.parse(a_url)
-          a_url = u.to_s.split(u.path).first + u.path
-
-          puts "#{@count} #{a_url}"
-
-          if @count > 10000
-            raise 'end'
-          elsif a_url.include?('www.facebook.com')
-            # ignore
-          elsif ParlyResource.exists?(:url => a_url)
-            resource = ParlyResource.find_by_url(a_url)
-            if resource.date
-              load_uri response, a_url, resource
-            end
-          else
-            load_uri response, a_url
-          end
-          puts "======================================="
-        end
-
-        s.on :every do |a_url, response, prior_url|
-        end
+        s.add_url_check { |url| parse_url?(url) }
+        s.setup { |url| setup(url, s) }
+        s.on(:failure) { |url, response, prior_url| log_failure(url, prior_url) }
+        s.on(:success) { |url, response, prior_url| handle_resource(url, response, prior_url) }
+        s.on(:every) { |url, response, prior_url|  }
       end
     end
 
-    def self.load_uri response, a_url, existing=nil
+    def parse_url? url
+      add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(pdf|css)$/] && !url[/(#[^\/]+)$/]
+      if url.include?('scottish.parliament') ||
+        url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
+        # url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/844/8062325.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495171.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495144.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495110.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495107.htm' ||
+        # url == 'http://www.publications.parliament.uk/pa/jt200203/jtselect/jtrights/188/188we18.htm'
+        add = false
+      end
+      add
+    end
+
+    def log_failure url, prior_url
+      puts "URL failed: #{url}"
+      puts " linked from #{prior_url}"
+    end
+
+    def setup url, s
+      # if url =~ %r{^http://.*wikipedia.*}
+        # s.headers['If-Modified-Since'] = 'Wed, 29 Apr 2009 08:14:31 GMT'
+      # end
+    end
+
+    def handle_resource url, response, prior_url
+      puts "***************************************"
+
+      url.gsub!(/\/[^\/]+\/\.\.\//, '/') while url.include? '/../'
+      u = URI.parse(url)
+      url = u.to_s.split(u.path).first + u.path
+
+      puts "#{@count} #{url}"
+
+      if @count > 10000
+        raise 'end'
+      elsif url.include?('www.facebook.com')
+        # ignore
+      elsif ParlyResource.exists?(:url => url)
+        resource = ParlyResource.find_by_url(url)
+        if resource.date
+          load_uri response, url, resource
+        end
+      else
+        load_uri response, url
+      end
+      puts "======================================="
+    end
+
+    def load_uri response, url, existing=nil
       begin
-        puts "#{response.code}: #{a_url}"
+        puts "#{response.code}: #{url}"
         data = Page.new
-        data.url = a_url
+        data.url = url
         data.body = response.body
         doc = Hpricot data.body
         data.title = doc.at('/html/head/title/text()').to_s
@@ -95,7 +99,7 @@ class ParlySpider
         response.header.each do |k,v|
           data.morph(k,v)
         end
-        
+
         if data.date
           data.response_date = data.date
           data.date = nil
@@ -147,13 +151,13 @@ class ParlySpider
               out_of_date = data.language && !existing.language?
             end
             if out_of_date
-              puts 'updating ' + a_url
+              puts 'updating ' + url
               resource = existing.update_attributes! attributes
               resource = existing
               @count += 1
             end
           else
-            puts 'saving ' + a_url
+            puts 'saving ' + url
             resource = ParlyResource.create! attributes
             @count += 1
           end
@@ -170,6 +174,8 @@ class ParlySpider
         raise e
       end
     end
+  end
+
 end
 
 class Page
