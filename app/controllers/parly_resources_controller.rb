@@ -20,6 +20,9 @@ class ParlyResourcesController < ResourceController::Base
         @parly_resources, total = ParlyResource.search(@search_query, pager.offset, pager.per_page, @sort)
         pager.replace(@parly_resources)
         pager.total_entries = total
+        @total = total
+        @current_start = ParlyResource.page_start(pager.per_page , params[:page])
+        @current_end = ParlyResource.page_end(total, pager.per_page, params[:page])
       end
     end
   end
