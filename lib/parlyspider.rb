@@ -74,106 +74,101 @@ class ParlySpider
         # ignore
       elsif ParlyResource.exists?(:url => url)
         resource = ParlyResource.find_by_url(url)
-        if resource.date
-          load_uri response, url, resource
-        end
+        load_uri(response, url, resource) if resource.date
       else
         load_uri response, url
       end
       puts "======================================="
     end
 
+    def out_of_date existing, attributes
+      existing && (existing.date && attributes[:date] && existing.date < attributes[:date])
+    end
+
     def load_uri response, url, existing=nil
       begin
-        puts "#{response.code}: #{url}"
-        data = Page.new
-        data.url = url
-        data.body = response.body
-        doc = Hpricot data.body
-        data.title = doc.at('/html/head/title/text()').to_s
+        attributes = load_data(response, url, existing)
 
-        if data.title == "Broadband Link - Error"
-          raise "Router caching error, indexing aborted"
-        end
-
-        response.header.each do |k,v|
-          data.morph(k,v)
-        end
-
-        if data.date
-          data.response_date = data.date
-          data.date = nil
-        end
-
-        meta = (doc/'/html/head/meta')
-        meta_attributes = meta.each do |m|
-          name = m['name']
-          content = m['content'].to_s
-          if name && !content.blank? && !name[/^(title)$/i]
-            if data.respond_to?(name.downcase.to_sym) && (value = data.send(name.downcase.to_sym))
-              value = [value] unless value.is_a?(Array)
-              value << content
-              data.morph(name, value)
-            else
-              data.morph(name, content)
-            end
-          end
-        end
-
-        begin
-          data.date = Time.parse(data.date) if data.date
-        rescue Exception => e
-          puts "cannot parse date: #{data.date}"
-          puts e.class.name
-          puts e.to_s
-          puts e.backtrace.join("\n")
-        end
-        data.response_date = Time.parse(data.response_date) if data.response_date
-        data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
-        data.coverage = Time.parse(data.coverage) if data.respond_to?(:coverage) && data.coverage
-        attributes = data.morph_attributes
-        attributes.each do |key, value|
-          if value.is_a?(Array)
-            attributes[key] = value.inspect
-          end
-        end
-        [:connection, :x_aspnetmvc_version, :x_aspnet_version,
-        :viewport, :version, :originator, :generator, :x_pingback, :pingback,
-        :content_location, :progid, :otheragent, :form, :robots,
-        :columns, :vs_targetschema, :vs_defaultclientscript, :code_language].each do |x|
-          attributes.delete(x)
-        end
-
-        begin
-          if existing
-            out_of_date = (existing.date && data.date && existing.date < data.date)
-            unless out_of_date
-              out_of_date = data.language && !existing.language?
-            end
-            if out_of_date
-              puts 'updating ' + url
-              resource = existing.update_attributes! attributes
-              resource = existing
-              @count += 1
-            end
-          else
-            puts 'saving ' + url
-            resource = ParlyResource.create! attributes
-            @count += 1
-          end
-        rescue Exception => e
-          puts e.class.name
-          puts e.to_s
-          puts e.backtrace.join("\n")
+        if !existing
+          puts 'saving ' + url
+          ParlyResource.create!(attributes)
+          @count += 1
+        elsif out_of_date(existing, attributes)
+          puts 'updating ' + url
+          existing.update_attributes!(attributes)
+          @count += 1
         end
 
       rescue Exception => e
         puts e.class.name
         puts e.to_s
         puts e.backtrace.join("\n")
-        raise e
       end
     end
+
+    def load_data response, url, existing
+      puts "#{response.code}: #{url}"
+      data = Page.new
+      data.url = url
+      data.body = response.body
+      doc = Hpricot data.body
+      data.title = doc.at('/html/head/title/text()').to_s
+
+      if data.title == "Broadband Link - Error"
+        raise "Router caching error, indexing aborted"
+      end
+
+      response.header.each do |k,v|
+        data.morph(k,v)
+      end
+
+      if data.date
+        data.response_date = data.date
+        data.date = nil
+      end
+
+      meta = (doc/'/html/head/meta')
+      meta_attributes = meta.each do |m|
+        name = m['name']
+        content = m['content'].to_s
+        if name && !content.blank? && !name[/^(title)$/i]
+          if data.respond_to?(name.downcase.to_sym) && (value = data.send(name.downcase.to_sym))
+            value = [value] unless value.is_a?(Array)
+            value << content
+            data.morph(name, value)
+          else
+            data.morph(name, content)
+          end
+        end
+      end
+
+      begin
+        data.date = Time.parse(data.date) if data.date
+      rescue Exception => e
+        puts "cannot parse date: #{data.date}"
+        puts e.class.name
+        puts e.to_s
+        puts e.backtrace.join("\n")
+      end
+      data.response_date = Time.parse(data.response_date) if data.response_date
+      data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
+      data.coverage = Time.parse(data.coverage) if data.respond_to?(:coverage) && data.coverage
+      attributes = data.morph_attributes
+      attributes.each do |key, value|
+        if value.is_a?(Array)
+          attributes[key] = value.inspect
+        end
+      end
+      [:connection, :x_aspnetmvc_version, :x_aspnet_version,
+      :viewport, :version, :originator, :generator, :x_pingback, :pingback,
+      :content_location, :progid, :otheragent, :form, :robots,
+      :columns, :vs_targetschema, :vs_defaultclientscript, :code_language].each do |x|
+        attributes.delete(x)
+      end
+
+      attributes
+    end
+
   end
 
 end
