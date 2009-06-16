@@ -1,84 +1,30 @@
 - @title = @parly_resource.title
 
-%p
-  %strong ISBN:
-  =h @parly_resource.isbn
-%p
-  %strong Coverage:
-  =h @parly_resource.coverage
-%p
-  %strong Author:
-  =h @parly_resource.author
-%p
-  %strong Subject:
-  =h @parly_resource.subject
-  Site section
-  %p= @parly_resource.sitesectiontype
-  page sub
-  %p= @parly_resource.pagesubject
-  sub sect type
-  %p= @parly_resource.subsectiontype
-  source
-  %p= @parly_resource.source
-  report
-  %p= @parly_resource.report
-  ident
-  %p= @parly_resource.identifier
-  keywrds
-  %p= @parly_resource.keywords
+%h1= @parly_resource.short_title
 %hr
-
 %p
-  %strong Title:
-  =h @parly_resource.title
-%p
-  %strong Description:
-  =h @parly_resource.description
-%p
-  %strong Body:
-  =h truncate(@parly_resource.body, :length => 400, :omission => " …")
-%p
-  %strong Accept ranges:
-  =h @parly_resource.accept_ranges
-%p
-  %strong Cache control:
-  =h @parly_resource.cache_control
-%p
-  %strong Content length:
-  =h @parly_resource.content_length
-%p
-  %strong Content type:
-  =h @parly_resource.content_type
-%p
-  %strong Date:
-  =h @parly_resource.date
-%p
-  %strong Etag:
-  =h @parly_resource.etag
-%p
-  %strong Expires:
-  =h @parly_resource.expires
-%p
-  %strong Last modified:
-  =h @parly_resource.last_modified
-%p
-  %strong Pragma:
-  =h @parly_resource.pragma
-%p
-  %strong Server:
-  =h @parly_resource.server
-%p
-  %strong Set cookie:
-  =h @parly_resource.set_cookie
-%p
-  %strong Transfer encoding:
-  =h @parly_resource.transfer_encoding
-%p
-  %strong Url:
+  %strong URL
   =h @parly_resource.url
 %p
-  %strong X powered by:
-  =h @parly_resource.x_powered_by
+  %strong Type
+  =h @parly_resource.content_type
+%p
+  %strong Language
+  =h @parly_resource.language
+%hr
+
+- sorted_attributes = @parly_resource.attributes.to_a.sort {|a,b| a[0] <=> b[0]}
+- sorted_attributes.each do |key, value|
+  - unless value.blank? || ['url','content_type','language','body','title','id','server','transfer_encoding'].include?(key) || key[/(_at|date)$/]
+    %p
+      %strong= key
+      =h value
+%hr
+- sorted_attributes.select{|x| x[0][/(_at|date)$/]}.each do |key, value|
+  - unless value.blank?
+    %p
+      %strong= key
+      =h value
 
 = link_to 'Edit', edit_object_url
 |

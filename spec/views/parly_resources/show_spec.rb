@@ -4,7 +4,42 @@ describe "/parly_resources/show.html.haml" do
   include ParlyResourcesHelper
 
   before(:each) do
+    @attributes = {
+        :title => "MyString",
+        :description => "MyText",
+        :body => "MyText",
+        :date => Time.now,
+        :accept_ranges => "MyString",
+        :cache_control => "MyString",
+        :connection => "MyString",
+        :content_length => "MyString",
+        :content_type => "MyString",
+        :date => Time.now,
+        :etag => "MyString",
+        :expires => "MyString",
+        :last_modified => Time.now,
+        :pragma => "MyString",
+        :server => "MyString",
+        :set_cookie => "MyString",
+        :transfer_encoding => "MyString",
+        :url => "MyString",
+        :isbn => "isbn",
+        :coverage => nil,
+        :author => nil,
+        :subject => nil,
+        :sitesectiontype => nil,
+        :pagesubject => nil,
+        :subsectiontype => nil,
+        :source => nil,
+        :report => nil,
+        :identifier => nil,
+        :keywords => nil,
+        :x_powered_by => "MyString"
+    }
+
+
     @parly_resource = mock_model(ParlyResource)
+    @parly_resource.stub!(:attributes).and_return(@attributes.stringify_keys)
     @parly_resource.stub!(:title).and_return("MyString")
     @parly_resource.stub!(:description).and_return("MyText")
     @parly_resource.stub!(:body).and_return("MyText")
