@@ -108,25 +108,24 @@ class ParlySpider
 
     def load_data response, url, existing
       puts "#{response.code}: #{url}"
-      data = Page.new
+      data = ResourceData.new
       data.url = url
       data.body = response.body
       doc = Hpricot data.body
-      data.title = doc.at('/html/head/title/text()').to_s
 
-      if data.title == "Broadband Link - Error"
-        raise "Router caching error, indexing aborted"
-      end
+      add_page_title(doc, data)
+      add_response_header_attributes(response, data)
+      add_html_meta_attributes(doc, data)
+      parse_time_attributes(data)
 
-      response.header.each do |k,v|
-        data.morph(k,v)
-      end
+      attributes = data.morph_attributes
+      delete_uneeded_attributes(attributes)
+      collapse_array_attribute_values(attributes)
 
-      if data.date
-        data.response_date = data.date
-        data.date = nil
-      end
+      attributes
+    end
 
+    def add_html_meta_attributes doc, data
       meta = (doc/'/html/head/meta')
       meta_attributes = meta.each do |m|
         name = m['name']
@@ -141,7 +140,28 @@ class ParlySpider
           end
         end
       end
+    end
 
+    def add_response_header_attributes response, data
+      response.header.each { |key, value| data.morph(key, value) }
+
+      if data.date
+        data.response_date = data.date
+        data.date = nil
+      end
+    end
+
+    def add_page_title doc, data
+      data.title = doc.at('/html/head/title/text()').to_s
+
+      if data.title.nil?
+        raise "No title found, indexing aborted"
+      elsif data.title == "Broadband Link - Error"
+        raise "Router caching error, indexing aborted"
+      end
+    end
+
+    def parse_time_attributes data
       begin
         data.date = Time.parse(data.date) if data.date
       rescue Exception => e
@@ -153,26 +173,29 @@ class ParlySpider
       data.response_date = Time.parse(data.response_date) if data.response_date
       data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
       data.coverage = Time.parse(data.coverage) if data.respond_to?(:coverage) && data.coverage
-      attributes = data.morph_attributes
-      attributes.each do |key, value|
-        if value.is_a?(Array)
-          attributes[key] = value.inspect
-        end
-      end
+    end
+
+    def delete_uneeded_attributes attributes
       [:connection, :x_aspnetmvc_version, :x_aspnet_version,
       :viewport, :version, :originator, :generator, :x_pingback, :pingback,
       :content_location, :progid, :otheragent, :form, :robots,
       :columns, :vs_targetschema, :vs_defaultclientscript, :code_language].each do |x|
         attributes.delete(x)
       end
+    end
 
-      attributes
+    def collapse_array_attribute_values attributes
+      attributes.each do |key, value|
+        if value.is_a?(Array)
+          attributes[key] = value.inspect
+        end
+      end
     end
 
   end
 
 end
 
-class Page
+class ResourceData
   include Morph
 end
