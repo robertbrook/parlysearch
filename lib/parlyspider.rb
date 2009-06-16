@@ -59,13 +59,16 @@ class ParlySpider
       # end
     end
 
-    def handle_resource url, response, prior_url
-      puts "***************************************"
-
+    def make_uri_absolute_and_strip_anchors url
       url.gsub!(/\/[^\/]+\/\.\.\//, '/') while url.include? '/../'
       u = URI.parse(url)
-      url = u.to_s.split(u.path).first + u.path
+      u.to_s.split(u.path).first + u.path
+    end
 
+    def handle_resource url, response, prior_url
+      url = make_uri_absolute_and_strip_anchors(url)
+
+      puts "***************************************"
       puts "#{@count} #{url}"
 
       if @count > 10000
