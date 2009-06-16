@@ -1,4 +1,5 @@
 require 'htmlentities'
+require 'lib/solr_cell.rb'
 
 class ParlyResource < ActiveRecord::Base
 
@@ -7,8 +8,7 @@ class ParlyResource < ActiveRecord::Base
 
   validates_presence_of :title
 
-  acts_as_solr :fields => [:short_title, :unique_description, :text, {:resource_date => :date}],
-               :facets => [:unique_description]
+  acts_as_solr :fields => [:short_title, :unique_description, :text, :resource_date]
 
   class << self
 
@@ -63,7 +63,7 @@ class ParlyResource < ActiveRecord::Base
     text = (description && short_title != description) ? description : ''
     convert_entities(text)
   end
-  
+
   def unique_description?
     unique_description && !unique_description.empty?
   end
