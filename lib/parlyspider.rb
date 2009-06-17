@@ -68,7 +68,7 @@ class ParlySpider
     def handle_resource url, response, prior_url
       url = make_uri_absolute_and_strip_anchors(url)
 
-      puts "***************************************"
+      puts "======================================="
       puts "#{@count} #{url} [#{response.code}]"
 
       if @count > 10000
@@ -77,29 +77,23 @@ class ParlySpider
         # ignore
       elsif ParlyResource.exists?(:url => url)
         resource = ParlyResource.find_by_url(url)
-        load_uri(response, url, resource) if resource.date
+        load_data(response, url, resource) if resource.date
       else
-        load_uri response, url
+        load_data(response, url)
       end
-      puts "======================================="
     end
 
-    def out_of_date existing, attributes
-      existing && (existing.date && attributes[:date] && existing.date < attributes[:date])
-    end
-
-    def load_uri response, url, existing=nil
+    def load_data response, url, existing=nil
       begin
         data = ResourceData.new(url,response)
-        attributes = data.attributes
 
         if !existing
-          puts 'saving ' + url
-          ParlyResource.create!(attributes)
+          ParlyResource.create!(data.attributes)
+          puts 'saved ' + url
           @count += 1
-        elsif out_of_date(existing, attributes)
-          puts 'updating ' + url
-          existing.update_attributes!(attributes)
+        elsif data.out_of_date? existing
+          existing.update_attributes!(data.attributes)
+          puts 'updated ' + url
           @count += 1
         end
 
@@ -132,6 +126,10 @@ class ResourceData
     self.attributes = attributes
   end
 
+  def out_of_date? existing
+    existing && (existing.date && date && existing.date < date)
+  end
+
   private
 
   def delete_uneeded_attributes attributes
@@ -153,9 +151,10 @@ class ResourceData
 
   def add_page_title doc
     self.title = doc.at('/html/head/title/text()').to_s
+    self.title = doc.at('//title/text()').to_s if title.blank?
 
     if title.blank?
-      raise "No title found, indexing aborted"
+      self.title = "UNTITLED"
     elsif title == "Broadband Link - Error"
       raise "Router caching error, indexing aborted"
     end
@@ -172,9 +171,11 @@ class ResourceData
 
   def add_html_meta_attributes doc
     meta = (doc/'/html/head/meta')
-    meta_attributes = meta.each do |m|
-      name = m['name']
-      content = m['content'].to_s
+    meta = (doc/'//meta') if meta.empty?
+
+    meta_attributes = meta.each do |meta|
+      name = meta['name']
+      content = meta['content'].to_s
       if name && !content.blank? && !name[/^(title)$/i]
         if respond_to?(name.downcase.to_sym) && (value = send(name.downcase.to_sym))
           value = [value] unless value.is_a?(Array)
