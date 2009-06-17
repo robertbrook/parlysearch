@@ -69,7 +69,7 @@ class ParlySpider
       url = make_uri_absolute_and_strip_anchors(url)
 
       puts "***************************************"
-      puts "#{@count} #{url}"
+      puts "#{@count} #{url} [#{response.code}]"
 
       if @count > 10000
         raise 'end'
@@ -90,7 +90,8 @@ class ParlySpider
 
     def load_uri response, url, existing=nil
       begin
-        attributes = load_data(response, url, existing)
+        data = ResourceData.new(url,response)
+        attributes = data.attributes
 
         if !existing
           puts 'saving ' + url
@@ -108,97 +109,95 @@ class ParlySpider
         puts e.backtrace.join("\n")
       end
     end
-
-    def load_data response, url, existing
-      puts "#{response.code}: #{url}"
-      data = ResourceData.new
-      data.url = url
-      data.body = response.body
-      doc = Hpricot data.body
-
-      add_page_title(doc, data)
-      add_response_header_attributes(response, data)
-      add_html_meta_attributes(doc, data)
-      parse_time_attributes(data)
-
-      attributes = data.morph_attributes
-      delete_uneeded_attributes(attributes)
-      collapse_array_attribute_values(attributes)
-
-      attributes
-    end
-
-    def add_html_meta_attributes doc, data
-      meta = (doc/'/html/head/meta')
-      meta_attributes = meta.each do |m|
-        name = m['name']
-        content = m['content'].to_s
-        if name && !content.blank? && !name[/^(title)$/i]
-          if data.respond_to?(name.downcase.to_sym) && (value = data.send(name.downcase.to_sym))
-            value = [value] unless value.is_a?(Array)
-            value << content
-            data.morph(name, value)
-          else
-            data.morph(name, content)
-          end
-        end
-      end
-    end
-
-    def add_response_header_attributes response, data
-      response.header.each { |key, value| data.morph(key, value) }
-
-      if data.date
-        data.response_date = data.date
-        data.date = nil
-      end
-    end
-
-    def add_page_title doc, data
-      data.title = doc.at('/html/head/title/text()').to_s
-
-      if data.title.nil?
-        raise "No title found, indexing aborted"
-      elsif data.title == "Broadband Link - Error"
-        raise "Router caching error, indexing aborted"
-      end
-    end
-
-    def parse_time_attributes data
-      begin
-        data.date = Time.parse(data.date) if data.date
-      rescue Exception => e
-        puts "cannot parse date: #{data.date}"
-        puts e.class.name
-        puts e.to_s
-        puts e.backtrace.join("\n")
-      end
-      data.response_date = Time.parse(data.response_date) if data.response_date
-      data.last_modified = Time.parse(data.last_modified) if data.respond_to?(:last_modified) && data.last_modified
-      data.coverage = Time.parse(data.coverage) if data.respond_to?(:coverage) && data.coverage
-    end
-
-    def delete_uneeded_attributes attributes
-      [:connection, :x_aspnetmvc_version, :x_aspnet_version,
-      :viewport, :version, :originator, :generator, :x_pingback, :pingback,
-      :content_location, :progid, :otheragent, :form, :robots,
-      :columns, :vs_targetschema, :vs_defaultclientscript, :code_language].each do |x|
-        attributes.delete(x)
-      end
-    end
-
-    def collapse_array_attribute_values attributes
-      attributes.each do |key, value|
-        if value.is_a?(Array)
-          attributes[key] = value.inspect
-        end
-      end
-    end
-
   end
 
 end
 
 class ResourceData
   include Morph
+
+  def initialize url, response
+    self.url = url
+    self.body = response.body
+    doc = Hpricot(body)
+
+    add_page_title(doc)
+    add_response_header_attributes(response)
+    add_html_meta_attributes(doc)
+    parse_time_attributes
+
+    attributes = morph_attributes
+    delete_uneeded_attributes(attributes)
+    collapse_array_attribute_values(attributes)
+    self.attributes = attributes
+  end
+
+  private
+
+  def delete_uneeded_attributes attributes
+    [:connection, :x_aspnetmvc_version, :x_aspnet_version,
+    :viewport, :version, :originator, :generator, :x_pingback, :pingback,
+    :content_location, :progid, :otheragent, :form, :robots,
+    :columns, :vs_targetschema, :vs_defaultclientscript, :code_language].each do |x|
+      attributes.delete(x)
+    end
+  end
+
+  def collapse_array_attribute_values attributes
+    attributes.each do |key, value|
+      if value.is_a?(Array)
+        attributes[key] = value.inspect
+      end
+    end
+  end
+
+  def add_page_title doc
+    self.title = doc.at('/html/head/title/text()').to_s
+
+    if title.blank?
+      raise "No title found, indexing aborted"
+    elsif title == "Broadband Link - Error"
+      raise "Router caching error, indexing aborted"
+    end
+  end
+
+  def add_response_header_attributes response
+    response.header.each { |key, value| morph(key, value) }
+
+    if date
+      self.response_date = date
+      self.date = nil
+    end
+  end
+
+  def add_html_meta_attributes doc
+    meta = (doc/'/html/head/meta')
+    meta_attributes = meta.each do |m|
+      name = m['name']
+      content = m['content'].to_s
+      if name && !content.blank? && !name[/^(title)$/i]
+        if respond_to?(name.downcase.to_sym) && (value = send(name.downcase.to_sym))
+          value = [value] unless value.is_a?(Array)
+          value << content
+          morph(name, value)
+        else
+          morph(name, content)
+        end
+      end
+    end
+  end
+
+  def parse_time_attributes
+    begin
+      self.date = Time.parse(date) if date
+    rescue Exception => e
+      puts "cannot parse date: #{date}"
+      puts e.class.name
+      puts e.to_s
+      puts e.backtrace.join("\n")
+    end
+    self.response_date = Time.parse(response_date) if response_date
+    self.last_modified = Time.parse(last_modified) if respond_to?(:last_modified) && last_modified
+    self.coverage = Time.parse(coverage) if respond_to?(:coverage) && coverage
+  end
 end
