@@ -55,6 +55,52 @@ class ParlyResource < ActiveRecord::Base
       end
     end
 
+    def strip_control_chars text
+      text.gsub!('&#00;', ' ') #  null character
+      text.gsub!('&#1;', ' ') # 	start of header
+      text.gsub!('&#2;', ' ') # 	start of text
+      text.gsub!('&#3;', ' ') # 	end of text
+      text.gsub!('&#4;', ' ') # 	end of transmission
+      text.gsub!('&#5;', ' ') # 	enquiry
+      text.gsub!('&#6;', ' ') # 	acknowledge
+      text.gsub!('&#7;', ' ') # 	bell (ring)
+      text.gsub!('&#8;', ' ') # 	backspace
+      text.gsub!('&#9;', ' ') # 	horizontal tab
+      text.gsub!('&#01;', ' ') # 	start of header
+      text.gsub!('&#02;', ' ') # 	start of text
+      text.gsub!('&#03;', ' ') # 	end of text
+      text.gsub!('&#04;', ' ') # 	end of transmission
+      text.gsub!('&#05;', ' ') # 	enquiry
+      text.gsub!('&#06;', ' ') # 	acknowledge
+      text.gsub!('&#07;', ' ') # 	bell (ring)
+      text.gsub!('&#08;', ' ') # 	backspace
+      text.gsub!('&#09;', ' ') # 	horizontal tab
+      text.gsub!('&#10;', ' ') # 	line feed
+      text.gsub!('&#11;', ' ') # 	vertical tab
+      text.gsub!('&#12;', ' ') # 	form feed
+      text.gsub!('&#13;', ' ') # 	carriage return
+      text.gsub!('&#14;', ' ') # 	shift out
+      text.gsub!('&#15;', ' ') # 	shift in
+      text.gsub!('&#16;', ' ') # 	data link escape
+      text.gsub!('&#17;', ' ') # 	device control 1
+      text.gsub!('&#18;', ' ') # 	device control 2
+      text.gsub!('&#19;', ' ') # 	device control 3
+      text.gsub!('&#20;', ' ') # 	device control 4
+      text.gsub!('&#21;', ' ') # 	negative acknowledge
+      text.gsub!('&#22;', ' ') # 	synchronize
+      text.gsub!('&#23;', ' ') # 	end transmission block
+      text.gsub!('&#24;', ' ') # 	cancel
+      text.gsub!('&#25;', ' ') # 	end of medium
+      text.gsub!('&#26;', ' ') # 	substitute
+      text.gsub!('&#27;', ' ') # 	escape
+      text.gsub!('&#28;', ' ') # 	file separator
+      text.gsub!('&#29;', ' ') # 	group separator
+      text.gsub!('&#30;', ' ') # 	record separator
+      text.gsub!('&#31;', ' ') # 	unit separator
+      text.gsub!('&#127;', ' ') # 	delete (rubout)
+      text
+    end
+
     private
       def sort_options sort
         case sort
@@ -125,44 +171,7 @@ class ParlyResource < ActiveRecord::Base
   private
 
     def convert_entities text
-      text = strip_control_chars(text)
+      text = ParlyResource.strip_control_chars(text)
       HTMLEntities.new.decode(text)
-    end
-
-    def strip_control_chars text
-      text.gsub!('&#00;', ' ') #  null character
-      text.gsub!('&#01;', ' ') # 	start of header
-      text.gsub!('&#02;', ' ') # 	start of text
-      text.gsub!('&#03;', ' ') # 	end of text
-      text.gsub!('&#04;', ' ') # 	end of transmission
-      text.gsub!('&#05;', ' ') # 	enquiry
-      text.gsub!('&#06;', ' ') # 	acknowledge
-      text.gsub!('&#07;', ' ') # 	bell (ring)
-      text.gsub!('&#08;', ' ') # 	backspace
-      text.gsub!('&#09;', ' ') # 	horizontal tab
-      text.gsub!('&#10;', ' ') # 	line feed
-      text.gsub!('&#11;', ' ') # 	vertical tab
-      text.gsub!('&#12;', ' ') # 	form feed
-      text.gsub!('&#13;', ' ') # 	carriage return
-      text.gsub!('&#14;', ' ') # 	shift out
-      text.gsub!('&#15;', ' ') # 	shift in
-      text.gsub!('&#16;', ' ') # 	data link escape
-      text.gsub!('&#17;', ' ') # 	device control 1
-      text.gsub!('&#18;', ' ') # 	device control 2
-      text.gsub!('&#19;', ' ') # 	device control 3
-      text.gsub!('&#20;', ' ') # 	device control 4
-      text.gsub!('&#21;', ' ') # 	negative acknowledge
-      text.gsub!('&#22;', ' ') # 	synchronize
-      text.gsub!('&#23;', ' ') # 	end transmission block
-      text.gsub!('&#24;', ' ') # 	cancel
-      text.gsub!('&#25;', ' ') # 	end of medium
-      text.gsub!('&#26;', ' ') # 	substitute
-      text.gsub!('&#27;', ' ') # 	escape
-      text.gsub!('&#28;', ' ') # 	file separator
-      text.gsub!('&#29;', ' ') # 	group separator
-      text.gsub!('&#30;', ' ') # 	record separator
-      text.gsub!('&#31;', ' ') # 	unit separator
-      text.gsub!('&#127;', ' ') # 	delete (rubout)
-      text
     end
 end

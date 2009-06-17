@@ -3,11 +3,13 @@ require 'spider'
 require 'morph'
 require 'hpricot'
 require 'uri'
+require 'iconv'
 
 class ParlySpider
   class << self
     def spider start='http://www.parliament.uk/'
       begin
+        Dir.mkdir("#{RAILS_ROOT}/data/pdfs") unless File.exist?("#{RAILS_ROOT}/data/pdfs")
         do_spider start
       rescue Exception => e
         puts e.class.name
@@ -32,19 +34,12 @@ class ParlySpider
     end
 
     def parse_url? url
-      add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(pdf|css)$/] && !url[/(#[^\/]+)$/]
+      add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(css)$/] && !url[/(#[^\/]+)$/]
       if url.include?('scottish.parliament') ||
         url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
-        # url == 'http://www.publications.parliament.uk/pa/jt199899/jtselect/jtpriv/43/8021002.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmagric/753/80519a02.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/844/8062325.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495171.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495144.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495110.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/cm199798/cmselect/cmenvtra/495/495107.htm' ||
-        # url == 'http://www.publications.parliament.uk/pa/jt200203/jtselect/jtrights/188/188we18.htm'
         add = false
       end
+
       add
     end
 
@@ -67,13 +62,10 @@ class ParlySpider
 
     def handle_resource url, response, prior_url
       url = make_uri_absolute_and_strip_anchors(url)
-
       puts "======================================="
       puts "#{@count} #{url} [#{response.code}]"
 
-      if @count > 10000
-        raise 'end'
-      elsif url.include?('www.facebook.com')
+      if url.include?('www.facebook.com')
         # ignore
       elsif ParlyResource.exists?(:url => url)
         resource = ParlyResource.find_by_url(url)
@@ -84,6 +76,7 @@ class ParlySpider
     end
 
     def load_data response, url, existing=nil
+      data = nil
       begin
         data = ResourceData.new(url,response)
 
@@ -98,6 +91,7 @@ class ParlySpider
         end
 
       rescue Exception => e
+        y(data.attributes) if data
         puts e.class.name
         puts e.to_s
         puts e.backtrace.join("\n")
@@ -112,9 +106,8 @@ class ResourceData
 
   def initialize url, response
     self.url = url
-    self.body = response.body
+    self.body = is_pdf?(url) ? get_pdf_text(url, response) : response.body
     doc = Hpricot(body)
-
     add_page_title(doc)
     add_response_header_attributes(response)
     add_html_meta_attributes(doc)
@@ -132,11 +125,48 @@ class ResourceData
 
   private
 
+  def is_pdf? url
+    url[/(pdf)$/]
+  end
+
+  def get_pdf_text url, response
+    name = url.sub('http://','').gsub('/','_').gsub('.','-').sub(/-pdf$/,'.pdf')
+    pdf = "#{RAILS_ROOT}/data/pdfs/#{name}"
+
+    text = get_pdf_text_from_response(pdf, response)
+    text = get_pdf_text_from_web(pdf, url) unless text
+
+    text = Iconv.iconv('ascii//translit', 'utf-8', text).to_s
+    text = HTMLEntities.new.encode(text, :decimal)
+    text = ParlyResource.strip_control_chars(text)
+    text = HTMLEntities.new.decode(text)
+    text
+  end
+
+  def get_pdf_text_from_web pdf, url
+    File.delete(pdf) unless File.exist?(pdf)
+    `curl -o #{pdf} #{url}`
+    get_html_from_pdf(pdf)
+  end
+
+  def get_pdf_text_from_response pdf, response
+    File.open(pdf,'wb') { |f| f.write response.body } unless File.exist?(pdf)
+    get_html_from_pdf(pdf)
+  end
+
+  def get_html_from_pdf pdf
+    html = pdf.sub('.pdf','.html')
+    `pdftotext -htmlmeta -enc UTF-8 #{pdf}` unless File.exist?(html)
+
+    File.exist?(html) ? IO.read(html) : nil
+  end
+
   def delete_uneeded_attributes attributes
     [:connection, :x_aspnetmvc_version, :x_aspnet_version,
     :viewport, :version, :originator, :generator, :x_pingback, :pingback,
     :content_location, :progid, :otheragent, :form, :robots,
-    :columns, :vs_targetschema, :vs_defaultclientscript, :code_language].each do |x|
+    :columns, :vs_targetschema, :vs_defaultclientscript, :code_language,
+    :x_n].each do |x|
       attributes.delete(x)
     end
   end
