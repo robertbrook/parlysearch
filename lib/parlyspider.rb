@@ -33,10 +33,18 @@ class ParlySpider
       end
     end
 
+    def is_pdf? url
+      url[/(pdf)$/]
+    end
+
     def parse_url? url
       add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(css)$/] && !url[/(#[^\/]+)$/]
       if url.include?('scottish.parliament') ||
         url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
+        add = false
+      end
+
+      if is_pdf?(url) && ParlyResource.exists?(:url => url)
         add = false
       end
 
