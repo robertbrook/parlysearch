@@ -34,9 +34,10 @@ class ParlySpider
     end
 
     def parse_url? url
-      add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(css)$/] && !url[/(#[^\/]+)$/]
+      add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(css|ico)$/] && !url[/(#[^\/]+)$/]
       if url.include?('scottish.parliament') ||
-        url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm'
+        url == 'http://www.publications.parliament.uk/pa/cm/cmparty/register/memi01.htm' ||
+        url[/^http:\/\/www.publications.parliament.uk\/pa\/cm\/cmparty\/register\/register.*/]
         add = false
       end
 
