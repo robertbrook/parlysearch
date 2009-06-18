@@ -37,14 +37,14 @@ class ResourceData
     text = get_pdf_text_from_response(pdf, response)
     text = get_pdf_text_from_web(pdf, url) unless text
 
-    text = convert_utf8_to_ascii(text)
+    text = convert_utf8_to_ascii(text, pdf)
     text = HTMLEntities.new.encode(text, :decimal)
     text = ParlyResource.strip_control_chars(text)
     text = HTMLEntities.new.decode(text)
     text
   end
 
-  def convert_utf8_to_ascii text
+  def convert_utf8_to_ascii text, pdf
     begin
       Iconv.iconv('ascii//translit', 'utf-8', text).to_s
     rescue Exception => e
