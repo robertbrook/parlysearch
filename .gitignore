@@ -4,5 +4,6 @@ test
 config/database.yml
 .DS_Store
 doc
+data/pdfs/*
 solr/*
 db/development_structure.sql
