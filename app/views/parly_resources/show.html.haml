@@ -20,6 +20,11 @@
       %strong= key
       =h value
 %hr
+
+%p
+  %strong Content
+  = highlights(@parly_resource.text, params[:q])
+
 - sorted_attributes.select{|x| x[0][/(_at|date)$/]}.each do |key, value|
   - unless value.blank?
     %p
