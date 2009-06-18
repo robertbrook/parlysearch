@@ -2,12 +2,9 @@ require 'htmlentities'
 
 class ParlyResource < ActiveRecord::Base
 
-  extend ActionView::Helpers::SanitizeHelper::ClassMethods
-  include ActionView::Helpers::SanitizeHelper
-
   validates_presence_of :title
 
-  acts_as_solr :fields => [:short_title, :unique_description, :text, :resource_date]
+  acts_as_solr :fields => [:short_title, :unique_description, :text, {:resource_date => :date}]
 
   class << self
 
@@ -149,12 +146,18 @@ class ParlyResource < ActiveRecord::Base
   def text
     return nil unless body
     text = String.new(body)
-    text.gsub!('<!','$$$!')
+
+    text.gsub!(/<(script|style|noscript)/i, 'XXX\1')
+    text.gsub!(/<\/(script|style|noscript)/i, 'XXX/\1')
+    text.gsub!('<','^^^')
+    text.gsub!(/XXX(script|style|noscript)/i, '<\1')
+    text.gsub!(/XXX\/(script|style|noscript)/i, '</\1')
+
     text.gsub!(/<noscript[^>]?>([^<]+)<\/noscript>/i,'')
     text.gsub!(/<script[^>]+>([^<]+)<\/script>/i,'')
     text.gsub!(/<style[^>]+>([^<]+)<\/style>/i,'')
-    text.gsub!('$$$!','<!')
-    text = strip_tags(text)
+    text.gsub!('^^^','<')
+
     convert_entities(text)
   end
 
@@ -171,6 +174,14 @@ class ParlyResource < ActiveRecord::Base
   private
 
     def convert_entities text
+      text = RailsSanitize.sanitize(text)
+      begin
+        text = Iconv.iconv('ascii//translit', 'utf-8', text).to_s
+      rescue Exception => e
+        puts "#{e.class.name} #{e.to_s}: cannot convert encoding"
+      end
+      text = ParlyResource.strip_control_chars(text)
+      text = HTMLEntities.new.encode(text, :decimal)
       text = ParlyResource.strip_control_chars(text)
       HTMLEntities.new.decode(text)
     end

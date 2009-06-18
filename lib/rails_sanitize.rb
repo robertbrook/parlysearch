@@ -7,4 +7,8 @@ class RailsSanitize
   else # Rails 2.1 or earlier (note: xss_terminate does not support Rails 1.x)
     include ActionView::Helpers::SanitizeHelper
   end
+
+  def self.sanitize text
+    full_sanitizer.sanitize text
+  end
 end

@@ -7,7 +7,7 @@ class ParlyResourcesController < ResourceController::Base
 
   def search
     @search_query = params[:q]
-    @search_query = RailsSanitize.full_sanitizer.sanitize(@search_query).sub(';',' ') unless @search_query.blank?
+    @search_query = RailsSanitize.sanitize(@search_query).sub(';',' ') unless @search_query.blank?
     @sort = params[:sort]
 
     if @search_query.blank?
