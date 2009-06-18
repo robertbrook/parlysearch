@@ -136,11 +136,21 @@ class ResourceData
     text = get_pdf_text_from_response(pdf, response)
     text = get_pdf_text_from_web(pdf, url) unless text
 
-    text = Iconv.iconv('ascii//translit', 'utf-8', text).to_s
+    text = convert_utf8_to_ascii(text)
     text = HTMLEntities.new.encode(text, :decimal)
     text = ParlyResource.strip_control_chars(text)
     text = HTMLEntities.new.decode(text)
     text
+  end
+
+  def convert_utf8_to_ascii text
+    begin
+      Iconv.iconv('ascii//translit', 'utf-8', text).to_s
+    rescue Exception => e
+      puts "#{e.class.name}: #{e.to_s}"
+      puts "Trying iconv conversion again, this time discarding unconvertible characters"
+      `iconv -c -f ascii//translit -t utf-8 #{pdf.sub('.pdf','.html')}`
+    end
   end
 
   def get_pdf_text_from_web pdf, url
