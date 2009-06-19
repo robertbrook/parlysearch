@@ -4,7 +4,22 @@ class ParlyResource < ActiveRecord::Base
 
   validates_presence_of :title
 
-  acts_as_solr :fields => [:short_title, :unique_description, :text, {:resource_date => :date}]
+  acts_as_solr :fields => [:short_title,
+      :unique_description,
+      :text,
+      {:resource_date => :date},
+      {:file_type => :facet}],
+      :facets => [:file_type]
+
+  def file_type
+    if content_type.include?('html')
+      'html'
+    elsif content_type.include?('pdf')
+      'pdf'
+    else
+      raise "unrecognized content type: #{content_type}"
+    end
+  end
 
   class << self
 
@@ -22,11 +37,12 @@ class ParlyResource < ActiveRecord::Base
       end
     end
 
-    def search term, offset, limit, sort=nil
+    def search term, offset, limit, sort=nil, file_type=nil
       if term.blank?
         []
       else
         options = sort_options(sort).merge(:offset => offset, :limit => limit)
+        term = "#{term} AND file_type:#{file_type}" if file_type && file_type[/^(pdf|html)$/]
         options = options.merge(:facets=>{:zeros=>false,:fields=>[:unique_description]})
         solr_results = find_by_solr(term, options)
         return [solr_results.results, solr_results.total]

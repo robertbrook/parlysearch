@@ -7,18 +7,21 @@ class ParlyResourcesController < ResourceController::Base
 
   def search
     @search_query = params[:q]
+    @file_type = params[:t]
     @search_query = RailsSanitize.sanitize(@search_query).sub(';',' ') unless @search_query.blank?
     @sort = params[:sort]
 
     if @search_query.blank?
       redirect_to root_url
     elsif params[:commit]
-      redirect_to :action => 'search', :q => @search_query
+      options = @file_type ? {:t => @file_type} : {}
+      redirect_to options.merge(:action => 'search', :q => @search_query)
     else
       params[:page] ||= '1'
       @title = "Search results for: #{@search_query}"
+
       @paginator = WillPaginate::Collection.create(params[:page], 10) do |pager|
-        @parly_resources, total = ParlyResource.search(@search_query, pager.offset, pager.per_page, @sort)
+        @parly_resources, total = ParlyResource.search(@search_query, pager.offset, pager.per_page, @sort, @file_type)
         pager.replace(@parly_resources)
         pager.total_entries = total
         @total = total
