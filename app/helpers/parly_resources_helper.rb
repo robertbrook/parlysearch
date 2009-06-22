@@ -45,7 +45,7 @@ module ParlyResourcesHelper
       if texts.size > 2
         texts = texts[0..1]
       end
-      excerpts = texts.join("<br />... ")
+      excerpts = texts.join(" ... ")
     else
       excerpts = ''
     end

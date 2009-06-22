@@ -17,5 +17,7 @@
       = link_to 'PDFs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
       &middot;
       = link_to 'HTML', search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
+      &middot;
+      = link_to 'Word', search_url(:q => h(@search_query), :sort => @sort, :t => 'word')
   = render :partial => 'search_result', :collection => @parly_resources
   = render :partial => 'pagination_navbar', :object => @paginator
