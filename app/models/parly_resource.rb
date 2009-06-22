@@ -23,6 +23,18 @@ class ParlyResource < ActiveRecord::Base
     end
   end
 
+  def file_format
+    if content_type.include?('text/html')
+      return 'HTML'
+    elsif content_type[/pdf/]
+      return 'PDF / Adobe Acrobat'
+    elsif content_type[/word/]
+      return 'MS Word'
+    else
+      return content_type
+    end
+  end
+
   class << self
 
     def reindex
@@ -44,7 +56,7 @@ class ParlyResource < ActiveRecord::Base
         []
       else
         options = sort_options(sort).merge(:offset => offset, :limit => limit)
-        term = "#{term} AND file_type:#{file_type}" if file_type && file_type[/^(pdf|html)$/]
+        term = "#{term} AND file_type:#{file_type}" if file_type && file_type[/^(pdf|html|word)$/]
         options = options.merge(:facets=>{:zeros=>false,:fields=>[:unique_description]})
         solr_results = find_by_solr(term, options)
         return [solr_results.results, solr_results.total]
@@ -165,18 +177,6 @@ class ParlyResource < ActiveRecord::Base
     text.sub!(/<\?xml [^>]+>/, '')
     text.sub!(/<!DOCTYPE [^>]+>/, '')
     convert_entities(text)
-  end
-
-  def file_format
-    if content_type.include?('text/html')
-      return 'HTML'
-    elsif content_type.include?('PDF')
-      return 'PDF / Adobe Acrobat'
-    elsif content_type[/word/]
-      return 'MS Word'
-    else
-      return content_type
-    end
   end
 
   private

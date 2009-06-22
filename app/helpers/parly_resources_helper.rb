@@ -3,7 +3,7 @@ module ParlyResourcesHelper
   def excerpts text, term, part_match=true
     text = text.gsub(/<p id='[\d\.]*[a-z]*'>/, ' ').gsub('<p>',' ').gsub('</p>',' ').gsub('<i>','').gsub('</i>','')
     excerpts = nil
-    
+
     term = term.gsub('"','')
 
     if text.include? term
@@ -32,6 +32,7 @@ module ParlyResourcesHelper
         end
       end
 
+      terms.delete_if { |word| IGNORE.include? word.downcase }
       terms.each do |term|
         texts = texts.collect do |text|
           if text.include?(' '+term) || text.include?(' '+term.titlecase) || text.include?(' '+term.downcase)
@@ -41,7 +42,10 @@ module ParlyResourcesHelper
           end
         end
       end
-      excerpts = texts.join("<br></br>")
+      if texts.size > 2
+        texts = texts[0..1]
+      end
+      excerpts = texts.join("<br />... ")
     else
       excerpts = ''
     end
@@ -66,7 +70,7 @@ module ParlyResourcesHelper
           end_phrase << after[i] << " " unless after[i].nil?
           i+=1
         end
-        
+
         start_phrase << phrase << " " << end_phrase.strip << omission
       else
         ""
@@ -89,8 +93,9 @@ module ParlyResourcesHelper
   def highlights text, term
     if term
       terms = term.split
-      terms.delete_if { |word| IGNORE.include? word }
+      terms.delete_if { |word| IGNORE.include? word.downcase }
       terms.each do |term|
+
         if text.include?(' '+term) || text.include?(' '+term.titlecase) || text.include?(' '+term.downcase)
           text = highlight(text, ' '+term)
         end
