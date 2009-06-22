@@ -17,6 +17,5 @@
       = link_to 'PDFs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
       |
       = link_to 'HTML', search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
-  %p= "Results #{@current_start} to #{@current_end} of #{@total}"
   = render :partial => 'search_result', :collection => @parly_resources
   = render :partial => 'pagination_navbar', :object => @paginator
