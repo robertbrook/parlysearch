@@ -23,9 +23,7 @@
 
 %p
   %strong Content
-  - if params[:q]
-    - @search_query = params[:q].gsub('"','')
-  = highlights(@parly_resource.text, @search_query)
+  = highlights(@parly_resource.text, params[:q].gsub('"',''))
 
 - sorted_attributes.select{|x| x[0][/(_at|date)$/]}.each do |key, value|
   - unless value.blank?
