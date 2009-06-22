@@ -3,16 +3,18 @@ module ParlyResourcesHelper
   def excerpts text, term, part_match=true
     text = text.gsub(/<p id='[\d\.]*[a-z]*'>/, ' ').gsub('<p>',' ').gsub('</p>',' ').gsub('<i>','').gsub('</i>','')
     excerpts = nil
+    
+    term = term.gsub('"','')
 
     if text.include? term
       text = tidy_excerpt(text, term, 120)
-      excerpts = highlight(text, term)
+      excerpts = highlights(text, term)
     elsif text.include? term.titlecase
       text = tidy_excerpt(text, term.titlecase, 120)
-      excerpts = highlight(text, term.titlecase)
+      excerpts = highlights(text, term.titlecase)
     elsif text.include? term.upcase
       text = tidy_excerpt(text, term.upcase, 120)
-      excerpts = highlight(text, term.titlecase)
+      excerpts = highlights(text, term.titlecase)
     elsif part_match
       terms = term.split
       terms.delete_if { |word| IGNORE.include? word }
