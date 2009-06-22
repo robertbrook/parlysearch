@@ -211,8 +211,8 @@ class PdfResourceData < HtmlResourceData
 
     write_response_body(file_path, response)
 
-    html = pdf.sub('.pdf','.html')
-    `pdftotext -htmlmeta -enc UTF-8 #{pdf}` unless File.exist?(html)
+    html = file_path.sub('.pdf','.html')
+    `pdftotext -htmlmeta -enc UTF-8 #{file_path}` unless File.exist?(html)
     text = File.exist?(html) ? IO.read(html) : nil
     text = get_pdf_text_from_web(file_path, url) unless text
     text = prepare_text(text, html)
