@@ -43,6 +43,7 @@ describe "/parly_resources/show.html.haml" do
     @parly_resource.stub!(:title).and_return("MyString")
     @parly_resource.stub!(:description).and_return("MyText")
     @parly_resource.stub!(:body).and_return("MyText")
+    @parly_resource.stub!(:text).and_return  "MyText"
     @parly_resource.stub!(:date).and_return(Time.now)
     @parly_resource.stub!(:accept_ranges).and_return("MyString")
     @parly_resource.stub!(:cache_control).and_return("MyString")

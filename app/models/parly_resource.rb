@@ -16,6 +16,8 @@ class ParlyResource < ActiveRecord::Base
       'html'
     elsif content_type.include?('pdf')
       'pdf'
+    elsif content_type.include?('word')
+      'word'
     else
       raise "unrecognized content type: #{content_type}"
     end
@@ -145,20 +147,6 @@ class ParlyResource < ActiveRecord::Base
     unique_description && !unique_description.empty?
   end
 
-  def meta_fields
-    doc = Hpricot body
-    meta = (doc/'/html/head/meta')
-    meta.inject([]) do |list, x|
-      if x['name'] && !x['content'].to_s.blank?
-        list << [ x['name'], x['content'].to_s ]
-      end
-      list
-    end
-
-    # reload! ; y ParlyResource.all.collect{|x| x.meta_fields.collect{|b| b[0]} }.flatten.uniq.sort
-    # ['pagesubject','sitesectiontype','subsectiontype','keywords']
-  end
-
   def text
     return nil unless body
     text = String.new(body)
@@ -174,6 +162,8 @@ class ParlyResource < ActiveRecord::Base
     text.gsub!(/<style[^>]+>([^<]+)<\/style>/i,'')
     text.gsub!('^^^','<')
 
+    text.sub!(/<\?xml [^>]+>/, '')
+    text.sub!(/<!DOCTYPE [^>]+>/, '')
     convert_entities(text)
   end
 
@@ -182,6 +172,8 @@ class ParlyResource < ActiveRecord::Base
       return 'HTML'
     elsif content_type.include?('PDF')
       return 'PDF / Adobe Acrobat'
+    elsif content_type[/word/]
+      return 'MS Word'
     else
       return content_type
     end

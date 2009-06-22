@@ -8,6 +8,7 @@ class ParlySpider
     def spider start='http://www.parliament.uk/'
       begin
         Dir.mkdir("#{RAILS_ROOT}/data/pdfs") unless File.exist?("#{RAILS_ROOT}/data/pdfs")
+        Dir.mkdir("#{RAILS_ROOT}/data/word_docs") unless File.exist?("#{RAILS_ROOT}/data/word_docs")
         do_spider start
       rescue Exception => e
         puts e.class.name
@@ -29,10 +30,6 @@ class ParlySpider
       end
     end
 
-    def is_pdf? url
-      url[/(pdf)$/]
-    end
-
     def parse_url? url
       add = (url =~ %r{^http://([^\.]+\.)+parliament\.uk.*}) && !url[/(css|ico)$/] && !url[/(#[^\/]+)$/]
       if url.include?('scottish.parliament') ||
@@ -41,7 +38,7 @@ class ParlySpider
         add = false
       end
 
-      if is_pdf?(url) && ParlyResource.exists?(:url => url)
+      if (ResourceData.is_pdf?(url) || ResourceData.is_word?(url)) && ParlyResource.exists?(:url => url)
         add = false
       end
 
@@ -84,7 +81,7 @@ class ParlySpider
     def load_data response, url, existing=nil
       data = nil
       begin
-        data = ResourceData.new(url,response)
+        data = ResourceData.create(url,response)
 
         if !existing
           ParlyResource.create!(data.attributes)
