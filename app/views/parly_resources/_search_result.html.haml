@@ -1,15 +1,19 @@
 %p.search-result
   - unless search_result.file_format == "HTML"
     %span.results-fileformat= "[" + search_result.file_format + "]"
-  = link_to h(search_result.short_title), search_result.url, :title => search_result.url
-  - if search_result.date
-    = search_result.date.to_s(:month_year)
-    %span.results-date= "&ndash; last updated " + time_ago_in_words(search_result.date) + " ago"
+  %span.short-title= link_to h(search_result.short_title), search_result.url, :title => search_result.url
   %br
-  - if search_result.unique_description?
-    %i= h search_result.unique_description
-    %br
+  - if search_result.date
+    %span.date{:title=>search_result.date.to_s(:month_year)}=  time_ago_in_words(search_result.date).gsub(/^over |^about /, '') + " ago -"
   = excerpts(search_result.text, @search_query)
-  %span.results-url= search_result.url[7..-1]
-  &ndash;
-  %small= link_to 'Cached', :action => "show", :id => search_result.id, :q => @search_query
+  %span
+    %span.results-url= search_result.url[7..-1]
+    -
+    &ndash;
+    = link_to 'Cached', :action => "show", :id => search_result.id, :q => @search_query
+    - if search_result.unique_description?
+      &ndash;
+      %span.unique_description
+        More results: 
+        =h search_result.unique_description
+    

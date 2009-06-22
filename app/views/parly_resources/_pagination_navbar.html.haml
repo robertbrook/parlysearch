@@ -1,4 +1,5 @@
 - paginator_content = will_paginate(pagination_navbar)
 - if paginator_content
   %p.pagination= paginator_content
+  %p= "Results #{@current_start} to #{@current_end} of #{@total}"
 

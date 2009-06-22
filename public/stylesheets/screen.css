@@ -5,10 +5,12 @@ h2 {font-size:138.5%;font-weight: bold;}
 p {margin-bottom: 1em;}
 #hd, #ft {padding: 2em 0;}
 a {text-decoration: none;}
-a.date {color:gray;}
+.search-result .date {color:#666;}
+.search-result .short-title {font-size:1.1em;}
 a.name {font-weight: bold;}
 strong {font-weight: bold;}
 .results-url {color:green;}
 .results-date-label, .results-fileformat-label {color:gray;font-size:0.8em;}
 .results-date, .results-fileformat {color:gray;}
-.highlight {font-weight: bold; background-color: yellow;}
+.highlight {font-weight: bold;}
+.faceting {padding-left:2em;}
