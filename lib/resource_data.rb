@@ -3,15 +3,37 @@ require 'hpricot'
 require 'iconv'
 
 class ResourceData
+
   include Morph
+
+  class << self
+    def is_pdf? url
+      url[/(pdf)$/]
+    end
+
+    def is_word? url
+      url[/(doc)$/]
+    end
+
+    def create url, response
+      if is_pdf?(url)
+        PdfResourceData.new(url, response)
+      elsif is_word?(url)
+        WordResourceData.new(url, response)
+      else
+        HtmlResourceData.new(url, response)
+      end
+    end
+  end
 
   def initialize url, response
     self.url = url
-    self.body = is_pdf?(url) ? get_pdf_text(url, response) : response.body
+
+    self.body = get_body url, response
     doc = Hpricot(body)
     add_page_title(doc)
     add_response_header_attributes(response)
-    add_html_meta_attributes(doc)
+    add_meta_attributes(doc)
     parse_time_attributes
 
     attributes = morph_attributes
@@ -24,55 +46,37 @@ class ResourceData
     existing && (existing.date && date && existing.date < date)
   end
 
-  private
+  protected
 
-  def is_pdf? url
-    url[/(pdf)$/]
+  def create_file_name url, ext
+    url.sub('http://','').gsub('/','_').gsub('.','-').sub(/-#{ext}$/,".#{ext}")
   end
 
-  def get_pdf_text url, response
-    name = url.sub('http://','').gsub('/','_').gsub('.','-').sub(/-pdf$/,'.pdf')
-    pdf = "#{RAILS_ROOT}/data/pdfs/#{name}"
+  def write_response_body file, response
+    File.open(file,'wb') { |f| f.write response.body } unless File.exist?(file)
+  end
 
-    text = get_pdf_text_from_response(pdf, response)
-    text = get_pdf_text_from_web(pdf, url) unless text
-
-    text = convert_utf8_to_ascii(text, pdf)
+  def prepare_text text, file_name
+    text = convert_utf8_to_ascii(text, file_name)
     text = HTMLEntities.new.encode(text, :decimal)
     text = ParlyResource.strip_control_chars(text)
     text = HTMLEntities.new.decode(text)
     text
   end
 
-  def convert_utf8_to_ascii text, pdf
+  def convert_utf8_to_ascii text, file_name
     begin
       Iconv.iconv('ascii//translit', 'utf-8', text).to_s
     rescue Exception => e
       puts "#{e.class.name}: #{e.to_s}"
       puts "Trying iconv conversion again, this time discarding unconvertible characters"
-      `iconv -c -f ascii//translit -t utf-8 #{pdf.sub('.pdf','.html')}`
+      `iconv -c -f ascii//translit -t utf-8 #{file_name}`
     end
   end
 
-  def get_pdf_text_from_web pdf, url
-    File.delete(pdf) unless File.exist?(pdf)
-    `curl -o #{pdf} #{url}`
-    get_html_from_pdf(pdf)
-  end
-
-  def get_pdf_text_from_response pdf, response
-    File.open(pdf,'wb') { |f| f.write response.body } unless File.exist?(pdf)
-    get_html_from_pdf(pdf)
-  end
-
-  def get_html_from_pdf pdf
-    html = pdf.sub('.pdf','.html')
-    `pdftotext -htmlmeta -enc UTF-8 #{pdf}` unless File.exist?(html)
-
-    File.exist?(html) ? IO.read(html) : nil
-  end
-
   def delete_uneeded_attributes attributes
+    corpname = attributes.delete(:corpname)
+    attributes[:publisher] = corpname if corpname
     [:connection, :x_aspnetmvc_version, :x_aspnet_version,
     :viewport, :version, :originator, :generator, :x_pingback, :pingback,
     :content_location, :progid, :otheragent, :form, :robots,
@@ -90,42 +94,12 @@ class ResourceData
     end
   end
 
-  def add_page_title doc
-    self.title = doc.at('/html/head/title/text()').to_s
-    self.title = doc.at('//title/text()').to_s if title.blank?
-
-    if title.blank?
-      self.title = "UNTITLED"
-    elsif title == "Broadband Link - Error"
-      raise "Router caching error, indexing aborted"
-    end
-  end
-
   def add_response_header_attributes response
     response.header.each { |key, value| morph(key, value) }
 
     if date
       self.response_date = date
       self.date = nil
-    end
-  end
-
-  def add_html_meta_attributes doc
-    meta = (doc/'/html/head/meta')
-    meta = (doc/'//meta') if meta.empty?
-
-    meta_attributes = meta.each do |meta|
-      name = meta['name']
-      content = meta['content'].to_s
-      if name && !content.blank? && !name[/^(title)$/i]
-        if respond_to?(name.downcase.to_sym) && (value = send(name.downcase.to_sym))
-          value = [value] unless value.is_a?(Array)
-          value << content
-          morph(name, value)
-        else
-          morph(name, content)
-        end
-      end
     end
   end
 
@@ -143,3 +117,104 @@ class ResourceData
     self.coverage = Time.parse(coverage) if respond_to?(:coverage) && coverage
   end
 end
+
+
+class WordResourceData < ResourceData
+  def get_body url, response
+    name = create_file_name url, 'doc'
+    file_path = "#{RAILS_ROOT}/data/word_docs/#{name}"
+    write_response_body(file_path, response)
+
+    xml_path = file_path.sub('.doc','.xml')
+    `antiword -x db #{file_path} > #{xml_path}`
+    text = File.exist?(xml_path) ? IO.read(xml_path) : nil
+    text = prepare_text(text, xml_path)
+    text
+  end
+
+  def add_page_title doc
+    self.title = doc.at('/book/title/text()').to_s
+  end
+
+  def add_meta_attributes(doc)
+    meta = (doc/'/book/bookinfo/*').select(&:elem?)
+
+    meta_attributes = meta.each do |meta|
+      name = meta.name
+      content = meta.inner_text.to_s.strip
+      if name && !content.blank? && !name[/^(title)$/i]
+        if respond_to?(name.downcase.to_sym) && (value = send(name.downcase.to_sym))
+          value = [value] unless value.is_a?(Array)
+          value << content
+          morph(name, value)
+        else
+          morph(name, content)
+        end
+      end
+    end
+  end
+end
+
+
+class HtmlResourceData < ResourceData
+
+  def get_body url, response
+    response.body
+  end
+
+  def add_page_title doc
+    self.title = doc.at('/html/head/title/text()').to_s
+    self.title = doc.at('//title/text()').to_s if title.blank?
+
+    if title.blank?
+      self.title = "UNTITLED"
+    elsif title == "Broadband Link - Error"
+      raise "Router caching error, indexing aborted"
+    end
+  end
+
+  def add_meta_attributes doc
+    meta = (doc/'/html/head/meta')
+    meta = (doc/'//meta') if meta.empty?
+
+    meta_attributes = meta.each do |meta|
+      name = meta['name']
+      content = meta['content'].to_s
+      if name && !content.blank? && !name[/^(title)$/i]
+        if respond_to?(name.downcase.to_sym) && (value = send(name.downcase.to_sym))
+          value = [value] unless value.is_a?(Array)
+          value << content
+          morph(name, value)
+        else
+          morph(name, content)
+        end
+      end
+    end
+  end
+end
+
+
+class PdfResourceData < HtmlResourceData
+
+  def get_body url, response
+    name = create_file_name url, 'pdf'
+    file_path = "#{RAILS_ROOT}/data/pdfs/#{name}"
+
+    write_response_body(file_path, response)
+
+    html = pdf.sub('.pdf','.html')
+    `pdftotext -htmlmeta -enc UTF-8 #{pdf}` unless File.exist?(html)
+    text = File.exist?(html) ? IO.read(html) : nil
+    text = get_pdf_text_from_web(file_path, url) unless text
+    text = prepare_text(text, html)
+    text
+  end
+
+  def get_pdf_text_from_web pdf, url
+    File.delete(pdf) unless File.exist?(pdf)
+    `curl -o #{pdf} #{url}`
+    get_html_from_pdf(pdf)
+  end
+
+end
+
