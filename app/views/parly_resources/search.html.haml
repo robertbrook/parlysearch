@@ -6,16 +6,16 @@
 - if @parly_resources.empty?
   %p= "No results found for: #{h(@search_query)}"
 - else
-  %p
+  %p.sort-and-facet
     %span.sorting-order
-      Sort by &ndash;
+      Sort by
       = link_to 'Newest first', search_url(:q => h(@search_query), :sort => 'newest_first')
-      |
+      &middot;
       = link_to 'Oldest first', search_url(:q => h(@search_query), :sort => 'oldest_first')
     %span.faceting
-      Show only &ndash;
+      Show only
       = link_to 'PDFs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
-      |
+      &middot;
       = link_to 'HTML', search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
   = render :partial => 'search_result', :collection => @parly_resources
   = render :partial => 'pagination_navbar', :object => @paginator
