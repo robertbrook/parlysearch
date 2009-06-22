@@ -205,6 +205,8 @@ end
 
 class PdfResourceData < HtmlResourceData
 
+  alias_method :get_body_orig, :get_body
+
   def get_body url, response
     name = create_file_name url, 'pdf'
     file_path = "#{RAILS_ROOT}/data/pdfs/#{name}"
