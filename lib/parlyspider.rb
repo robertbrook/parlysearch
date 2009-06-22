@@ -5,11 +5,11 @@ require 'resource_data'
 
 class ParlySpider
   class << self
-    def spider start='http://www.parliament.uk/'
+    def spider start='http://www.parliament.uk/', pattern=nil
       begin
         Dir.mkdir("#{RAILS_ROOT}/data/pdfs") unless File.exist?("#{RAILS_ROOT}/data/pdfs")
         Dir.mkdir("#{RAILS_ROOT}/data/word_docs") unless File.exist?("#{RAILS_ROOT}/data/word_docs")
-        do_spider start
+        do_spider start, pattern
       rescue Exception => e
         puts e.class.name
         puts e.to_s
@@ -19,8 +19,9 @@ class ParlySpider
 
     private
 
-    def do_spider start
+    def do_spider start, match_pattern
       @count = 0
+      @match_pattern = match_pattern
       Spider.start_at(start) do |s|
         s.add_url_check { |url| parse_url?(url) }
         s.setup { |url| setup(url, s) }
@@ -39,6 +40,10 @@ class ParlySpider
       end
 
       if (ResourceData.is_pdf?(url) || ResourceData.is_word?(url)) && ParlyResource.exists?(:url => url)
+        add = false
+      end
+
+      if !url.include?(@match_pattern)
         add = false
       end
 

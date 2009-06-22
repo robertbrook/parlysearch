@@ -18,7 +18,8 @@ namespace :parlysearch do
       puts e.to_s
     end
     start = ENV['start'] || 'http://www.parliament.uk/'
-    ParlySpider.spider start
+    pattern = ENV['pattern']
+    ParlySpider.spider start, pattern
   end
 end
 
