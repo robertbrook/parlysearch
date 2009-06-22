@@ -30,16 +30,18 @@ class ResourceData
     self.url = url
 
     self.body = get_body url, response
-    doc = Hpricot(body)
-    add_page_title(doc)
-    add_response_header_attributes(response)
-    add_meta_attributes(doc)
-    parse_time_attributes
+    if body
+      doc = Hpricot(body)
+      add_page_title(doc)
+      add_response_header_attributes(response)
+      add_meta_attributes(doc)
+      parse_time_attributes
 
-    attributes = morph_attributes
-    delete_uneeded_attributes(attributes)
-    collapse_array_attribute_values(attributes)
-    self.attributes = attributes
+      attributes = morph_attributes
+      delete_uneeded_attributes(attributes)
+      collapse_array_attribute_values(attributes)
+      self.attributes = attributes
+    end
   end
 
   def out_of_date? existing
@@ -126,10 +128,17 @@ class WordResourceData < ResourceData
     write_response_body(file_path, response)
 
     xml_path = file_path.sub('.doc','.xml')
-    `antiword -x db #{file_path} > #{xml_path}`
-    text = File.exist?(xml_path) ? IO.read(xml_path) : nil
-    text = prepare_text(text, xml_path)
-    text
+
+    check = `which antiword`
+    unless check.blank?
+      `antiword -x db #{file_path} > #{xml_path}`
+      text = File.exist?(xml_path) ? IO.read(xml_path) : nil
+      text = prepare_text(text, xml_path)
+      text
+    else
+      puts 'to index Word docs install antiword: e.g. sudo port install antiword'
+      nil
+    end
   end
 
   def add_page_title doc
