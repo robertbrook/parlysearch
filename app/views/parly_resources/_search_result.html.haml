@@ -4,11 +4,11 @@
   %span.short-title= link_to h(search_result.short_title), search_result.url, :title => search_result.url
   %br
   - if search_result.date
-    %span.date{:title=>search_result.date.to_s(:month_year)}=  time_ago_in_words(search_result.date).gsub(/^over /, '') + " ago -"
+    %span.date{:title=>search_result.date.to_s(:month_year)}=  time_ago_in_words(search_result.date).gsub(/^over |^about /, '') + " ago -"
   = excerpts(search_result.text, @search_query)
-  %span.results-url= search_result.url[7..-1]
-  -
-  %small
+  %span
+    %span.results-url= search_result.url[7..-1]
+    -
     &ndash;
     = link_to 'Cached', :action => "show", :id => search_result.id, :q => @search_query
     - if search_result.unique_description?

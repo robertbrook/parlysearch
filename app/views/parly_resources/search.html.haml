@@ -9,9 +9,9 @@
   %p.sort-and-facet
     %span.sorting-order
       Sort by
-      = link_to 'Newest first', search_url(:q => h(@search_query), :sort => 'newest_first')
+      = link_to 'Newest', search_url(:q => h(@search_query), :sort => 'newest_first')
       &middot;
-      = link_to 'Oldest first', search_url(:q => h(@search_query), :sort => 'oldest_first')
+      = link_to 'Oldest', search_url(:q => h(@search_query), :sort => 'oldest_first')
     %span.faceting
       Show only
       = link_to 'PDFs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
