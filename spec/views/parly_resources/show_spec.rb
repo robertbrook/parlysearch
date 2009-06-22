@@ -41,6 +41,7 @@ describe "/parly_resources/show.html.haml" do
     @parly_resource = mock_model(ParlyResource)
     @parly_resource.stub!(:attributes).and_return(@attributes.stringify_keys)
     @parly_resource.stub!(:title).and_return("MyString")
+    @parly_resource.stub!(:text).and_return("MyStringText")
     @parly_resource.stub!(:description).and_return("MyText")
     @parly_resource.stub!(:body).and_return("MyText")
     @parly_resource.stub!(:text).and_return  "MyText"

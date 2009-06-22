@@ -23,7 +23,7 @@
 
 %p
   %strong Content
-  = highlights(@parly_resource.text, params[:q])
+  = highlights(@parly_resource.text, params[:q].gsub('"',''))
 
 - sorted_attributes.select{|x| x[0][/(_at|date)$/]}.each do |key, value|
   - unless value.blank?
