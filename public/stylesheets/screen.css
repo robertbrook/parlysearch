@@ -14,3 +14,4 @@ strong {font-weight: bold;}
 .results-date, .results-fileformat {color:gray;}
 .highlight {font-weight: bold;}
 .faceting {padding-left:2em;}
+.pagination .disabled {display:none;}
