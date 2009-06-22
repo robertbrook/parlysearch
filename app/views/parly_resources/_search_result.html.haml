@@ -8,7 +8,6 @@
   = excerpts(search_result.text, @search_query)
   %span
     %span.results-url= search_result.url[7..-1]
-    -
     &ndash;
     = link_to 'Cached', :action => "show", :id => search_result.id, :q => @search_query
     - if search_result.unique_description?
