@@ -83,7 +83,7 @@ class ResourceData
     :viewport, :version, :originator, :generator, :x_pingback, :pingback,
     :content_location, :progid, :otheragent, :form, :robots,
     :columns, :vs_targetschema, :vs_defaultclientscript, :code_language,
-    :x_n].each do |x|
+    :x_n, :verify_v1].each do |x|
       attributes.delete(x)
     end
   end
