@@ -11,4 +11,5 @@ strong {font-weight: bold;}
 .results-url {color:green;}
 .results-date-label, .results-fileformat-label {color:gray;font-size:0.8em;}
 .results-date, .results-fileformat {color:gray;}
-.highlight {font-weight: bold; background-color: yellow;}
+.highlight {font-weight: bold;}
+.faceting {padding-left:2em;}
