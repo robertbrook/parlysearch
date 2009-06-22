@@ -7,13 +7,16 @@
   %p= "No results found for: #{h(@search_query)}"
 - else
   %p
-    = link_to 'Show newest first', search_url(:q => h(@search_query), :sort => 'newest_first')
-    |
-    = link_to 'Show oldest first', search_url(:q => h(@search_query), :sort => 'oldest_first')
-    |
-    = link_to 'Show only pdfs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
-    |
-    = link_to 'Show only html', search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
+    %span.sorting-order
+      Sort by &ndash;
+      = link_to 'Newest first', search_url(:q => h(@search_query), :sort => 'newest_first')
+      |
+      = link_to 'Oldest first', search_url(:q => h(@search_query), :sort => 'oldest_first')
+    %span.faceting
+      Show only &ndash;
+      = link_to 'PDFs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
+      |
+      = link_to 'HTML', search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
   %p= "Results #{@current_start} to #{@current_end} of #{@total}"
   = render :partial => 'search_result', :collection => @parly_resources
   = render :partial => 'pagination_navbar', :object => @paginator
