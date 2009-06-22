@@ -43,7 +43,7 @@ class ParlySpider
         add = false
       end
 
-      if !url.include?(@match_pattern)
+      if @match_pattern && !url.include?(@match_pattern)
         add = false
       end
 
