@@ -14,4 +14,5 @@ strong {font-weight: bold;}
 .results-date, .results-fileformat {color:gray;}
 .highlight {font-weight: bold;}
 .faceting {padding-left:2em;}
+.sort_options {padding-right:3.1em;}
 .pagination .disabled {display:none;}
