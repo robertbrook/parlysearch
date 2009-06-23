@@ -19,6 +19,8 @@
     = link_to Facet.get_display_facet('html'), search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
     &middot;
     = link_to Facet.get_display_facet('word'), search_url(:q => h(@search_query), :sort => @sort, :t => 'word')
+    &middot;
+    = link_to 'All', search_url(:q => h(@search_query), :sort => @sort)
 
 %hr
 
