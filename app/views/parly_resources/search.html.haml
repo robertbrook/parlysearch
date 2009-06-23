@@ -1,23 +1,37 @@
 - unless @title
   @title = "Search"
 
+- @sort_order = params[:sort]
+- @facet = params[:t]
+
 = render :partial => 'search_form'
+
+%p.sort-and-facet
+  %span.sorting-order
+    Sort by
+    = link_to SortOrder.get_display_order('newest_first'), search_url(:q => h(@search_query), :sort => 'newest_first', :t => @facet)
+    &middot;
+    = link_to SortOrder.get_display_order('oldest_first'), search_url(:q => h(@search_query), :sort => 'oldest_first', :t => @facet)
+  %span.faceting
+    Show only
+    = link_to Facet.get_display_facet('pdf'), search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
+    &middot;
+    = link_to Facet.get_display_facet('html'), search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
+    &middot;
+    = link_to Facet.get_display_facet('word'), search_url(:q => h(@search_query), :sort => @sort, :t => 'word')
+
+%hr
+
+%p.current_options
+  -if @sort_order
+    = "Sorted by: #{SortOrder.get_display_order(@sort_order)}"
+  -if @facet
+    - if @sort_order
+      = "<br />"
+    = "Currently displaying: #{Facet.get_display_facet(@facet)} results"
 
 - if @parly_resources.empty?
   %p= "No results found for: #{h(@search_query)}"
 - else
-  %p.sort-and-facet
-    %span.sorting-order
-      Sort by
-      = link_to 'Newest', search_url(:q => h(@search_query), :sort => 'newest_first')
-      &middot;
-      = link_to 'Oldest', search_url(:q => h(@search_query), :sort => 'oldest_first')
-    %span.faceting
-      Show only
-      = link_to 'PDFs', search_url(:q => h(@search_query), :sort => @sort, :t => 'pdf')
-      &middot;
-      = link_to 'HTML', search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
-      &middot;
-      = link_to 'Word', search_url(:q => h(@search_query), :sort => @sort, :t => 'word')
   = render :partial => 'search_result', :collection => @parly_resources
   = render :partial => 'pagination_navbar', :object => @paginator
