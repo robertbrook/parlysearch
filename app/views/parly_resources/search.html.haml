@@ -24,11 +24,11 @@
 
 %p.current_options
   -if @sort_order
-    = "Sorted by: #{SortOrder.get_display_order(@sort_order)}"
+    = "Sorted by #{SortOrder.get_display_order(@sort_order)} first"
   -if @facet
     - if @sort_order
       = "<br />"
-    = "Currently displaying: #{Facet.get_display_facet(@facet)} results"
+    = "Showing only #{Facet.get_display_facet(@facet)}"
 
 - if @parly_resources.empty?
   %p= "No results found for: #{h(@search_query)}"
