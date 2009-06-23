@@ -86,19 +86,19 @@ class ParlySpider
     def load_data response, url, existing=nil
       data = nil
       begin
-        data = ResourceData.create(url,response)
+        data = ResourceData.create(url, response)
+        puts data.title.to_s
 
         if !existing
           ParlyResource.create!(data.attributes)
-          puts 'saved ' + url
           @count += 1
         elsif data.out_of_date? existing
           existing.update_attributes!(data.attributes)
-          puts 'updated ' + url
           @count += 1
         end
 
       rescue Exception => e
+        puts(data.class.name) if data
         y(data.attributes) if data
         puts e.class.name
         puts e.to_s
