@@ -28,6 +28,12 @@ class ParlyResourcesController < ResourceController::Base
         @current_start = ParlyResource.page_start(pager.per_page , params[:page])
         @current_end = ParlyResource.page_end(total, pager.per_page, params[:page])
       end
+      
+      respond_to do |format|
+        format.atom do
+          render :template => 'parly_resources/search.atom.builder', :layout => false and return false
+        end
+      end
     end
   end
 end
