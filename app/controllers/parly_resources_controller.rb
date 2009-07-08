@@ -30,10 +30,10 @@ class ParlyResourcesController < ResourceController::Base
       end
       
       # respond_to do |format|
-      #         format.atom do
-      #           render :template => 'parly_resources/search.atom.builder', :layout => false and return false
-      #         end
-      #       end
+      #               format.atom do
+      #                 render :template => 'parly_resources/search.atom.builder', :layout => false and return false
+      #               end
+      #             end
     end
   end
 end

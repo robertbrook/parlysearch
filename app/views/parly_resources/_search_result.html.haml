@@ -14,5 +14,5 @@
       &ndash;
       %span.unique_description
         More: 
-        = h search_result.unique_description
+        = h(search_result.unique_description)
         /= link_to search_result.unique_description, :action => "show", :id => search_result.id, :q => @search_query

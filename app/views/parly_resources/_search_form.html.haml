@@ -1,5 +1,5 @@
-- form_tag search_url do
-  %p
+#search
+  - form_tag search_url do
     %input{ :value=>"#{h(@search_query)}", :autocomplete=>"on", :type=>"search", :autosave=>"search-parliament-uk-autosave", :autofocus=>"true", :results=>"20", :id=>"q", :name=>"q", :size=>"30" }
     = submit_tag 'Search'
 

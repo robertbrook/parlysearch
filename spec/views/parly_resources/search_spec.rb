@@ -15,7 +15,6 @@ describe "/parly_resources/index.html.haml" do
     parly_resource_99 = mock_model(ParlyResource)
     parly_resource_99.should_receive(:short_title).and_return("Short")
     parly_resource_99.should_receive(:unique_description?).and_return(false)
-    # parly_resource_99.should_receive(:unique_description).twice.and_return("")
     parly_resource_99.should_receive(:text).and_return("text")
     parly_resource_99.should_receive(:url).exactly(3).times.and_return("MyString")
     parly_resource_99.should_receive(:file_format).and_return("HTML")
@@ -23,7 +22,6 @@ describe "/parly_resources/index.html.haml" do
     parly_resource_100 = mock_model(ParlyResource)
     parly_resource_100.should_receive(:short_title).and_return("")
     parly_resource_100.should_receive(:unique_description?).and_return(false)
-    # parly_resource_100.should_receive(:unique_description).and_return(nil)
     parly_resource_100.should_receive(:text).and_return("text")
     parly_resource_100.should_receive(:url).exactly(3).times.and_return("MyString")
     parly_resource_100.should_receive(:file_format).and_return("HTML")
@@ -40,5 +38,18 @@ describe "/parly_resources/index.html.haml" do
   it "should render list of parly_resources" do
     render "/parly_resources/search.html.haml"
   end
+  
+  it "should have a link with the text 'Newest' with the class 'disabled' when the sort order is 'newest_first'"
+
+  it "should have a link with the text 'Oldest' with the class 'disabled' when the sort order is 'oldest_first'"
+
+  it "should have a link with the text 'PDFs' with the class 'disabled' when the type facet is 'pdf'"
+
+  it "should have a link with the text 'HTML' with the class 'disabled' when the type facet is 'html'"
+
+  it "should have a link with the text 'Word' with the class 'disabled' when the type facet is 'word'"
+  
+  it "should have a link with the text 'All' with the class 'disabled' when the type facet is not present"
+
 end
 
