@@ -1,15 +1,14 @@
 - @title = @parly_resource.title
 
-%h1= @parly_resource.short_title
-%hr
+%p.title= @title + ' ' + (link_to('Edit', edit_object_url))
+
+%p=link_to(@parly_resource.url, @parly_resource.url)
+
 %p
-  %strong URL
-  =h @parly_resource.url
-%p
-  %strong Type
+  %span Type
   =h @parly_resource.content_type
 %p
-  %strong Language
+  %span Language
   =h @parly_resource.language
 %hr
 
@@ -17,22 +16,19 @@
 - sorted_attributes.each do |key, value|
   - unless value.blank? || ['url','content_type','language','body','title','id','server','transfer_encoding'].include?(key) || key[/(_at|date)$/]
     %p
-      %strong= key
+      %span= key
       =h value
-%hr
 
-%p
-  %strong Content
-  - if params[:q]
-    - @search_query = params[:q].gsub('"','')
-  = highlights(@parly_resource.text, @search_query)
+- unless @parly_resource.text == ""
+  %textarea.content
+    - if params[:q]
+      - @search_query = params[:q].gsub('"','')
+    = highlights(@parly_resource.text, @search_query)
 
 - sorted_attributes.select{|x| x[0][/(_at|date)$/]}.each do |key, value|
   - unless value.blank?
     %p
-      %strong= key
+      %span= key
       =h value
+      =h time_ago_in_words(value) + " ago"
 
-= link_to 'Edit', edit_object_url
-|
-= link_to 'Back', collection_url

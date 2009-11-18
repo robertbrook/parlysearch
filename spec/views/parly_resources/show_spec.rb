@@ -100,5 +100,8 @@ describe "/parly_resources/show.html.haml" do
     response.should have_text(/MyString/)
     response.should have_text(/MyString/)
   end
+  
+  it "should return the same results for the query 'turntool' and the query 'TurnTool'"
+  
 end
 

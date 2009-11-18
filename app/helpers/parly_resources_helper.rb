@@ -103,5 +103,24 @@ module ParlyResourcesHelper
     end
     text
   end
+  
+  def first_results_url
+    url_for(params.merge(:only_path => false, :page => 1))
+  end
+  
+  def next_results_url(paginator)
+    url_for(params.merge(:only_path => false, :page => paginator.next_page))
+  end
+  
+  def previous_results_url(paginator)
+    url_for(params.merge(:only_path => false, :page => paginator.previous_page))
+  end
+  
+  def last_results_url(paginator)
+    url_for(params.merge(:only_path => false, :page => paginator.total_pages))
+  end
 
+  def atom_link(builder, rel, href)
+    builder.link(:rel => rel, :href => href, :type => 'application/atom+xml')
+  end
 end

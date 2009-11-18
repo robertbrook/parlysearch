@@ -19,16 +19,20 @@
     = link_to Facet.get_display_facet('html'), search_url(:q => h(@search_query), :sort => @sort, :t => 'html')
     &middot;
     = link_to Facet.get_display_facet('word'), search_url(:q => h(@search_query), :sort => @sort, :t => 'word')
+    &middot;
+    = link_to 'All', search_url(:q => h(@search_query), :sort => @sort)
 
 %hr
 
 %p.current_options
   -if @sort_order
-    = "Sorted by #{SortOrder.get_display_order(@sort_order)} first"
+    = '<span class="sort_options">'
+    = "Sorted by #{SortOrder.get_display_order(@sort_order).downcase} first"
+    = "</span>"
   -if @facet
-    - if @sort_order
-      = "<br />"
+    = '<span class="facet_options">'
     = "Showing only #{Facet.get_display_facet(@facet)}"
+    = '</span>'
 
 - if @parly_resources.empty?
   %p= "No results found for: #{h(@search_query)}"

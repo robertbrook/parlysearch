@@ -27,9 +27,9 @@ class ParlyResource < ActiveRecord::Base
     if content_type.include?('text/html')
       return 'HTML'
     elsif content_type[/pdf/]
-      return 'PDF / Adobe Acrobat'
+      return 'PDF'
     elsif content_type[/word/]
-      return 'MS Word'
+      return 'DOC'
     else
       return content_type
     end
