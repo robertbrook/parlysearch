@@ -82,7 +82,7 @@ module ResourceData
       :viewport, :version, :originator, :generator, :x_pingback, :pingback,
       :content_location, :progid, :otheragent, :form, :robots,
       :columns, :vs_targetschema, :vs_defaultclientscript, :code_language,
-      :x_n, :verify_v1].each do |x|
+      :x_n, :verify_v1, :contenttypes, :x_runtime, :status, :vary].each do |x|
         attributes.delete(x)
       end
     end
@@ -122,9 +122,9 @@ module ResourceData
   module HtmlParseMethods
     def add_page_title doc
       self.title = doc.at('/html/head/title/text()').to_s
-      self.title = doc.at('//title/text()').to_s if title.blank?
+      self.title = doc.at('//title/text()').to_s if !respond_to?(:title) || title.blank?
 
-      if title.blank?
+      if !respond_to?(:title) || title.blank?
         self.title = "UNTITLED"
       elsif title == "Broadband Link - Error"
         raise "Router caching error, indexing aborted"

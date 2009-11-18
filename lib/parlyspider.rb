@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'spider'
+# require 'spider'
 require 'uri'
 require 'resource_data'
 
@@ -22,8 +22,25 @@ class ParlySpider
     def do_spider start, match_pattern
       @count = 0
       @match_pattern = match_pattern
-      Spider.start_at(start) do |s|
-        s.add_url_check { |url| parse_url?(url) }
+      @start_url = start
+      begin
+        start_do_spider @start_url
+      rescue Exeception => e
+        warn "#{e.class.name} #{e.to_s}"
+        warn e.bactrace.join("\n")
+        warn "continuing from #{@start_url}"
+        start_do_spider @start_url
+        raise
+      end
+    end
+
+    def start_do_spider start_url
+      Spider.start_at(start_url) do |s|
+        s.add_url_check do |url|
+          add = parse_url?(url)
+          @start_url = url if add
+          add
+        end
         s.setup { |url| setup(url, s) }
         s.on(:failure) { |url, response, prior_url| log_failure(url, prior_url) }
         s.on(:success) { |url, response, prior_url| handle_resource(url, response, prior_url) }
@@ -46,6 +63,10 @@ class ParlySpider
       if @match_pattern && !url.include?(@match_pattern)
         add = false
       end
+
+      # if url[/cm199/]
+        # add = false
+      # end
 
       add
     end
